@@ -1,0 +1,355 @@
+{
+  "info": {
+    "name": "XHotel PMS API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test(\"Status code is 2xx\", function () {",
+          "  pm.expect(pm.response.code).to.be.within(200, 299);",
+          "});"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "01-auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {"raw": "{{baseUrl}}{{apiPrefix}}/auth/login", "host": ["{{baseUrl}}"], "path": ["{{apiPrefix}}", "auth", "login"]},
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"agent@hotel.com\",\n  \"password\": \"secret\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Login returns token\", function () {",
+                  "  var jsonData = pm.response.json();",
+                  "  pm.expect(jsonData).to.have.property(\"token\");",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "  pm.environment.set(\"token\", jsonData.token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{token}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}{{apiPrefix}}/auth/logout", "host": ["{{baseUrl}}"], "path": ["{{apiPrefix}}", "auth", "logout"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "02-reservations",
+      "item": [
+        {
+          "name": "List",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/reservations?filter[status]=confirmed",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{apiPrefix}}", "reservations"],
+              "query": [{"key": "filter[status]", "value": "confirmed"}]
+            }
+          }
+        },
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{token}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}{{apiPrefix}}/reservations", "host": ["{{baseUrl}}"], "path": ["{{apiPrefix}}", "reservations"]},
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"guest\": {\"name\": \"Aye Aye\", \"phone\": \"+959123456\"},\n  \"check_in\": \"2026-02-14\",\n  \"check_out\": \"2026-02-16\",\n  \"room_type_id\": 3,\n  \"adults\": 2,\n  \"children\": 0,\n  \"source\": \"walk_in\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Create reservation returns id\", function () {",
+                  "  var jsonData = pm.response.json();",
+                  "  pm.expect(jsonData).to.have.property(\"id\");",
+                  "});",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.id) {",
+                  "  pm.environment.set(\"reservationId\", jsonData.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{token}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}{{apiPrefix}}/reservations/{{reservationId}}", "host": ["{{baseUrl}}"], "path": ["{{apiPrefix}}", "reservations", "{{reservationId}}"]},
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"check_out\": \"2026-02-17\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Cancel",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{token}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}{{apiPrefix}}/reservations/{{reservationId}}/cancel", "host": ["{{baseUrl}}"], "path": ["{{apiPrefix}}", "reservations", "{{reservationId}}", "cancel"]},
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Guest no show\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "03-front-desk",
+      "item": [
+        {
+          "name": "Check-in",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{token}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}{{apiPrefix}}/stays/{{stayId}}/check-in", "host": ["{{baseUrl}}"], "path": ["{{apiPrefix}}", "stays", "{{stayId}}", "check-in"]},
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"room_id\": {{roomId}},\n  \"deposit\": {\"amount\": 50000, \"currency\": \"MMK\"}\n}"
+            }
+          }
+        },
+        {
+          "name": "Check-out",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{token}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}{{apiPrefix}}/stays/{{stayId}}/check-out", "host": ["{{baseUrl}}"], "path": ["{{apiPrefix}}", "stays", "{{stayId}}", "check-out"]},
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"payment\": {\"method\": \"cash\", \"amount\": 150000, \"currency\": \"MMK\"}\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "04-folios",
+      "item": [
+        {
+          "name": "Get Folio",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}{{apiPrefix}}/folios/{{folioId}}", "host": ["{{baseUrl}}"], "path": ["{{apiPrefix}}", "folios", "{{folioId}}"]}
+          }
+        },
+        {
+          "name": "Post Charge",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{token}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}{{apiPrefix}}/folios/{{folioId}}/charges", "host": ["{{baseUrl}}"], "path": ["{{apiPrefix}}", "folios", "{{folioId}}", "charges"]},
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"minibar\",\n  \"description\": \"Snacks\",\n  \"amount\": 8000,\n  \"currency\": \"MMK\",\n  \"tax_amount\": 400\n}"
+            }
+          }
+        },
+        {
+          "name": "Post Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{token}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}{{apiPrefix}}/folios/{{folioId}}/payments", "host": ["{{baseUrl}}"], "path": ["{{apiPrefix}}", "folios", "{{folioId}}", "payments"]},
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"card\",\n  \"amount\": 100000,\n  \"currency\": \"MMK\",\n  \"exchange_rate\": 1,\n  \"reference\": \"KBZ-123456\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Statement",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}{{apiPrefix}}/folios/{{folioId}}/statement", "host": ["{{baseUrl}}"], "path": ["{{apiPrefix}}", "folios", "{{folioId}}", "statement"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "05-housekeeping",
+      "item": [
+        {
+          "name": "List Tasks",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/housekeeping/tasks?filter[status]=open",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{apiPrefix}}", "housekeeping", "tasks"],
+              "query": [{"key": "filter[status]", "value": "open"}]
+            }
+          }
+        },
+        {
+          "name": "Update Task",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{token}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}{{apiPrefix}}/housekeeping/tasks/{{taskId}}", "host": ["{{baseUrl}}"], "path": ["{{apiPrefix}}", "housekeeping", "tasks", "{{taskId}}"]},
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"completed\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "06-reports",
+      "item": [
+        {
+          "name": "Occupancy",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/reports/occupancy?from=2026-02-01&to=2026-02-28",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{apiPrefix}}", "reports", "occupancy"],
+              "query": [
+                {"key": "from", "value": "2026-02-01"},
+                {"key": "to", "value": "2026-02-28"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cashier Shift",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {
+              "raw": "{{baseUrl}}{{apiPrefix}}/reports/cashier-shift?date=2026-02-14&cashier_id={{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{apiPrefix}}", "reports", "cashier-shift"],
+              "query": [
+                {"key": "date", "value": "2026-02-14"},
+                {"key": "cashier_id", "value": "{{userId}}"}
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "07-admin",
+      "item": [
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}{{apiPrefix}}/users", "host": ["{{baseUrl}}"], "path": ["{{apiPrefix}}", "users"]}
+          }
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{token}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}{{apiPrefix}}/users", "host": ["{{baseUrl}}"], "path": ["{{apiPrefix}}", "users"]},
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Supervisor\",\n  \"email\": \"sup@hotel.com\",\n  \"role\": \"supervisor\",\n  \"password\": \"secret\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List ABAC Policies",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+            "url": {"raw": "{{baseUrl}}{{apiPrefix}}/abac/policies", "host": ["{{baseUrl}}"], "path": ["{{apiPrefix}}", "abac", "policies"]}
+          }
+        },
+        {
+          "name": "Create ABAC Policy",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{token}}"}
+            ],
+            "url": {"raw": "{{baseUrl}}{{apiPrefix}}/abac/policies", "host": ["{{baseUrl}}"], "path": ["{{apiPrefix}}", "abac", "policies"]},
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"reservation.update\",\n  \"rules\": {\n    \"effect\": \"allow\",\n    \"conditions\": [\n      {\"left\": \"user.property_id\", \"op\": \"==\", \"right\": \"resource.property_id\"}\n    ]\n  }\n}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

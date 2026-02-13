@@ -1,0 +1,34 @@
+{
+  "en": {
+    "shortcuts.title": "Keyboard Shortcuts",
+    "shortcuts.search": "Global search",
+    "shortcuts.goReservations": "Go to reservations",
+    "shortcuts.goCheckin": "Go to check-in",
+    "shortcuts.goCheckout": "Go to check-out",
+    "shortcuts.help": "Open shortcuts help",
+    "shortcuts.filterFocus": "Focus filters",
+    "shortcuts.newReservation": "New reservation",
+    "shortcuts.cancelReservation": "Cancel reservation",
+    "shortcuts.assignRoom": "Assign room",
+    "shortcuts.openDeposit": "Open deposit",
+    "shortcuts.confirm": "Confirm action",
+    "shortcuts.openPayment": "Open payment",
+    "shortcuts.markComplete": "Mark task complete"
+  },
+  "my": {
+    "shortcuts.title": "ကီးဘုတ် ဖြတ်လမ်းများ",
+    "shortcuts.search": "ကမ္ဘာလုံးဆိုင်ရာ ရှာဖွေမှု",
+    "shortcuts.goReservations": "Reservation စာရင်းသို့ သွားရန်",
+    "shortcuts.goCheckin": "Check-in သို့ သွားရန်",
+    "shortcuts.goCheckout": "Check-out သို့ သွားရန်",
+    "shortcuts.help": "ဖြတ်လမ်းအကူအညီ ဖွင့်ရန်",
+    "shortcuts.filterFocus": "စစ်ထုတ်မှုများသို့ ဦးတည်ရန်",
+    "shortcuts.newReservation": "Reservation အသစ်",
+    "shortcuts.cancelReservation": "Reservation ပယ်ဖျက်ရန်",
+    "shortcuts.assignRoom": "အခန်း သတ်မှတ်ရန်",
+    "shortcuts.openDeposit": "သDeposit ဖွင့်ရန်",
+    "shortcuts.confirm": "အတည်ပြုရန်",
+    "shortcuts.openPayment": "ငွေပေးချေမှု ဖွင့်ရန်",
+    "shortcuts.markComplete": "လုပ်ငန်းပြီးစီးပြီ အမှတ်ထားရန်"
+  }
+}

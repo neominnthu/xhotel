@@ -1,0 +1,914 @@
+openapi: 3.0.3
+info:
+  title: XHotel PMS API
+  version: 1.0.0
+  description: API for single-tenant hotel property operations.
+servers:
+  - url: /api/v1
+security:
+  - bearerAuth: []
+paths:
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Logout
+      responses:
+        '200':
+          description: Logout success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkResponse'
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: Get current user
+      responses:
+        '200':
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /properties/current:
+    get:
+      tags: [Properties]
+      summary: Get current property
+      responses:
+        '200':
+          description: Property
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Property'
+  /room-types:
+    get:
+      tags: [Rooms]
+      summary: List room types
+      responses:
+        '200':
+          description: Room types list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomTypeList'
+  /rooms:
+    get:
+      tags: [Rooms]
+      summary: List rooms
+      parameters:
+        - $ref: '#/components/parameters/filterStatus'
+        - $ref: '#/components/parameters/filterRoomTypeId'
+      responses:
+        '200':
+          description: Rooms list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoomList'
+  /rooms/{id}/assign:
+    patch:
+      tags: [Rooms]
+      summary: Assign room to reservation
+      parameters:
+        - $ref: '#/components/parameters/roomId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoomAssignRequest'
+      responses:
+        '200':
+          description: Room assigned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Room'
+  /reservations:
+    get:
+      tags: [Reservations]
+      summary: List reservations
+      parameters:
+        - $ref: '#/components/parameters/filterReservationStatus'
+        - $ref: '#/components/parameters/filterCheckIn'
+        - $ref: '#/components/parameters/sort'
+      responses:
+        '200':
+          description: Reservations list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReservationList'
+    post:
+      tags: [Reservations]
+      summary: Create reservation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReservationCreateRequest'
+      responses:
+        '200':
+          description: Reservation created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+  /reservations/{id}:
+    patch:
+      tags: [Reservations]
+      summary: Update reservation
+      parameters:
+        - $ref: '#/components/parameters/reservationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReservationUpdateRequest'
+      responses:
+        '200':
+          description: Reservation updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+  /reservations/{id}/cancel:
+    post:
+      tags: [Reservations]
+      summary: Cancel reservation
+      parameters:
+        - $ref: '#/components/parameters/reservationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReservationCancelRequest'
+      responses:
+        '200':
+          description: Reservation canceled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+  /stays/{id}/check-in:
+    post:
+      tags: [Stays]
+      summary: Check in
+      parameters:
+        - $ref: '#/components/parameters/stayId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StayCheckInRequest'
+      responses:
+        '200':
+          description: Checked in
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stay'
+  /stays/{id}/check-out:
+    post:
+      tags: [Stays]
+      summary: Check out
+      parameters:
+        - $ref: '#/components/parameters/stayId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StayCheckOutRequest'
+      responses:
+        '200':
+          description: Checked out
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stay'
+  /folios/{id}:
+    get:
+      tags: [Folios]
+      summary: Get folio
+      parameters:
+        - $ref: '#/components/parameters/folioId'
+      responses:
+        '200':
+          description: Folio
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Folio'
+  /folios/{id}/charges:
+    post:
+      tags: [Folios]
+      summary: Post charge
+      parameters:
+        - $ref: '#/components/parameters/folioId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChargeCreateRequest'
+      responses:
+        '200':
+          description: Charge posted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Charge'
+  /folios/{id}/payments:
+    post:
+      tags: [Folios]
+      summary: Post payment
+      parameters:
+        - $ref: '#/components/parameters/folioId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentCreateRequest'
+      responses:
+        '200':
+          description: Payment posted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+  /folios/{id}/statement:
+    get:
+      tags: [Folios]
+      summary: Get folio statement
+      parameters:
+        - $ref: '#/components/parameters/folioId'
+      responses:
+        '200':
+          description: Statement
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FolioStatement'
+  /housekeeping/tasks:
+    get:
+      tags: [Housekeeping]
+      summary: List housekeeping tasks
+      parameters:
+        - $ref: '#/components/parameters/filterTaskStatus'
+      responses:
+        '200':
+          description: Tasks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HousekeepingTaskList'
+  /housekeeping/tasks/{id}:
+    patch:
+      tags: [Housekeeping]
+      summary: Update housekeeping task
+      parameters:
+        - $ref: '#/components/parameters/taskId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HousekeepingTaskUpdateRequest'
+      responses:
+        '200':
+          description: Task updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HousekeepingTask'
+  /reports/occupancy:
+    get:
+      tags: [Reports]
+      summary: Occupancy report
+      parameters:
+        - $ref: '#/components/parameters/reportFrom'
+        - $ref: '#/components/parameters/reportTo'
+      responses:
+        '200':
+          description: Occupancy report
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OccupancyReport'
+  /reports/cashier-shift:
+    get:
+      tags: [Reports]
+      summary: Cashier shift report
+      parameters:
+        - $ref: '#/components/parameters/reportDate'
+        - $ref: '#/components/parameters/cashierId'
+      responses:
+        '200':
+          description: Cashier report
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CashierShiftReport'
+  /users:
+    get:
+      tags: [Admin]
+      summary: List users
+      responses:
+        '200':
+          description: Users list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserList'
+    post:
+      tags: [Admin]
+      summary: Create user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateRequest'
+      responses:
+        '200':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /abac/policies:
+    get:
+      tags: [Admin]
+      summary: List ABAC policies
+      responses:
+        '200':
+          description: Policies list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AbacPolicyList'
+    post:
+      tags: [Admin]
+      summary: Create ABAC policy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AbacPolicyCreateRequest'
+      responses:
+        '200':
+          description: Policy created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AbacPolicy'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    roomId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    reservationId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    stayId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    folioId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    taskId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    cashierId:
+      name: cashier_id
+      in: query
+      required: true
+      schema:
+        type: integer
+    filterStatus:
+      name: filter[status]
+      in: query
+      schema:
+        type: string
+    filterRoomTypeId:
+      name: filter[room_type_id]
+      in: query
+      schema:
+        type: integer
+    filterReservationStatus:
+      name: filter[status]
+      in: query
+      schema:
+        type: string
+    filterCheckIn:
+      name: filter[check_in]
+      in: query
+      schema:
+        type: string
+        format: date
+    filterTaskStatus:
+      name: filter[status]
+      in: query
+      schema:
+        type: string
+    sort:
+      name: sort
+      in: query
+      schema:
+        type: string
+    reportFrom:
+      name: from
+      in: query
+      required: true
+      schema:
+        type: string
+        format: date
+    reportTo:
+      name: to
+      in: query
+      required: true
+      schema:
+        type: string
+        format: date
+    reportDate:
+      name: date
+      in: query
+      required: true
+      schema:
+        type: string
+        format: date
+  schemas:
+    OkResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+      required: [ok]
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required: [email, password]
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+      required: [token, user]
+    Property:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        timezone:
+          type: string
+        default_currency:
+          type: string
+        default_language:
+          type: string
+      required: [id, name, timezone, default_currency, default_language]
+    RoomType:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: object
+          additionalProperties:
+            type: string
+        capacity:
+          type: integer
+        base_rate:
+          $ref: '#/components/schemas/Money'
+      required: [id, name, capacity, base_rate]
+    RoomTypeList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoomType'
+      required: [data]
+    Room:
+      type: object
+      properties:
+        id:
+          type: integer
+        number:
+          type: string
+        room_type_id:
+          type: integer
+        status:
+          type: string
+        housekeeping_status:
+          type: string
+      required: [id, number, room_type_id, status, housekeeping_status]
+    RoomList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Room'
+      required: [data]
+    RoomAssignRequest:
+      type: object
+      properties:
+        reservation_id:
+          type: integer
+      required: [reservation_id]
+    Guest:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        phone:
+          type: string
+      required: [id, name]
+    Reservation:
+      type: object
+      properties:
+        id:
+          type: integer
+        code:
+          type: string
+        status:
+          type: string
+        check_in:
+          type: string
+          format: date
+        check_out:
+          type: string
+          format: date
+        guest:
+          $ref: '#/components/schemas/Guest'
+        room_type_id:
+          type: integer
+        room_id:
+          type: integer
+          nullable: true
+      required: [id, code, status, check_in, check_out]
+    ReservationList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reservation'
+      required: [data]
+    ReservationCreateRequest:
+      type: object
+      properties:
+        guest:
+          type: object
+          properties:
+            name:
+              type: string
+            phone:
+              type: string
+            id_type:
+              type: string
+            id_number:
+              type: string
+          required: [name]
+        check_in:
+          type: string
+          format: date
+        check_out:
+          type: string
+          format: date
+        room_type_id:
+          type: integer
+        adults:
+          type: integer
+        children:
+          type: integer
+        source:
+          type: string
+        special_requests:
+          type: string
+      required: [guest, check_in, check_out, room_type_id, adults]
+    ReservationUpdateRequest:
+      type: object
+      properties:
+        check_in:
+          type: string
+          format: date
+        check_out:
+          type: string
+          format: date
+        adults:
+          type: integer
+        children:
+          type: integer
+        room_id:
+          type: integer
+    ReservationCancelRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+      required: [reason]
+    Stay:
+      type: object
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+        actual_check_in:
+          type: string
+          format: date-time
+        actual_check_out:
+          type: string
+          format: date-time
+      required: [id, status]
+    StayCheckInRequest:
+      type: object
+      properties:
+        room_id:
+          type: integer
+        deposit:
+          $ref: '#/components/schemas/Money'
+      required: [room_id]
+    StayCheckOutRequest:
+      type: object
+      properties:
+        payment:
+          $ref: '#/components/schemas/PaymentCreateRequest'
+      required: [payment]
+    Money:
+      type: object
+      properties:
+        amount:
+          type: integer
+        currency:
+          type: string
+      required: [amount, currency]
+    Charge:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+        amount:
+          type: integer
+        currency:
+          type: string
+      required: [id, type, amount, currency]
+    Payment:
+      type: object
+      properties:
+        id:
+          type: integer
+        method:
+          type: string
+        amount:
+          type: integer
+        currency:
+          type: string
+      required: [id, method, amount, currency]
+    ChargeCreateRequest:
+      type: object
+      properties:
+        type:
+          type: string
+        description:
+          type: string
+        amount:
+          type: integer
+        currency:
+          type: string
+        tax_amount:
+          type: integer
+      required: [type, amount, currency]
+    PaymentCreateRequest:
+      type: object
+      properties:
+        method:
+          type: string
+        amount:
+          type: integer
+        currency:
+          type: string
+        exchange_rate:
+          type: number
+        reference:
+          type: string
+      required: [method, amount, currency]
+    Folio:
+      type: object
+      properties:
+        id:
+          type: integer
+        reservation_id:
+          type: integer
+        currency:
+          type: string
+        total:
+          type: integer
+        balance:
+          type: integer
+        charges:
+          type: array
+          items:
+            $ref: '#/components/schemas/Charge'
+        payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Payment'
+      required: [id, reservation_id, currency, total, balance]
+    FolioStatement:
+      type: object
+      properties:
+        folio_id:
+          type: integer
+        currency:
+          type: string
+        lines:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date
+              type:
+                type: string
+              amount:
+                type: integer
+        total:
+          type: integer
+        balance:
+          type: integer
+      required: [folio_id, currency, total, balance]
+    HousekeepingTask:
+      type: object
+      properties:
+        id:
+          type: integer
+        room_id:
+          type: integer
+        type:
+          type: string
+        status:
+          type: string
+      required: [id, room_id, type, status]
+    HousekeepingTaskList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/HousekeepingTask'
+      required: [data]
+    HousekeepingTaskUpdateRequest:
+      type: object
+      properties:
+        status:
+          type: string
+      required: [status]
+    OccupancyReport:
+      type: object
+      properties:
+        from:
+          type: string
+          format: date
+        to:
+          type: string
+          format: date
+        occupancy:
+          type: number
+        adr:
+          type: integer
+        revpar:
+          type: integer
+      required: [from, to, occupancy, adr, revpar]
+    CashierShiftReport:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        cashier:
+          $ref: '#/components/schemas/User'
+        total_cash:
+          type: integer
+        total_card:
+          type: integer
+      required: [date, cashier, total_cash, total_card]
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+        department:
+          type: string
+      required: [id, name, role]
+    UserList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+      required: [data]
+    UserCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+        password:
+          type: string
+      required: [name, email, role, password]
+    AbacPolicy:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        is_active:
+          type: boolean
+      required: [id, name, is_active]
+    AbacPolicyList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AbacPolicy'
+      required: [data]
+    AbacPolicyCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        rules:
+          type: object
+      required: [name, rules]

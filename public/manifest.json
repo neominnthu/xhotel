@@ -1,0 +1,66 @@
+{
+    "name": "XHotel PMS",
+    "short_name": "XHotel",
+    "description": "Professional Hotel Property Management System",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#1f2937",
+    "orientation": "portrait-primary",
+    "scope": "/",
+    "lang": "en",
+    "dir": "ltr",
+    "categories": ["business", "productivity"],
+    "icons": [
+        {
+            "src": "/favicon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/favicon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "New Reservation",
+            "short_name": "New Booking",
+            "description": "Create a new guest reservation",
+            "url": "/reservations/create",
+            "icons": [
+                {
+                    "src": "/favicon-192x192.png",
+                    "sizes": "192x192"
+                }
+            ]
+        },
+        {
+            "name": "Front Desk",
+            "short_name": "Check-in/out",
+            "description": "Manage guest check-ins and check-outs",
+            "url": "/front-desk",
+            "icons": [
+                {
+                    "src": "/favicon-192x192.png",
+                    "sizes": "192x192"
+                }
+            ]
+        },
+        {
+            "name": "Housekeeping",
+            "short_name": "Room Status",
+            "description": "View and update room cleaning status",
+            "url": "/housekeeping",
+            "icons": [
+                {
+                    "src": "/favicon-192x192.png",
+                    "sizes": "192x192"
+                }
+            ]
+        }
+    ]
+}
