@@ -6,6 +6,7 @@ use App\Models\Folio;
 use App\Models\Guest;
 use App\Models\Reservation;
 use App\Models\Room;
+use App\Models\RoomStatusLog;
 use App\Models\Stay;
 use App\Models\User;
 use Illuminate\Support\Collection;
@@ -13,9 +14,10 @@ use Illuminate\Validation\ValidationException;
 
 class FrontDeskService
 {
-    public function __construct(public StayService $stayService)
-    {
-    }
+    public function __construct(
+        public StayService $stayService,
+        public AuditLogService $auditLogService
+    ) {}
 
     /**
      * Check in a guest for a reservation.
@@ -42,11 +44,19 @@ class FrontDeskService
     {
         $room = Room::findOrFail($roomId);
 
+        if ($room->status !== 'available') {
+            throw ValidationException::withMessages([
+                'room_id' => ['Room is not available for assignment.'],
+            ]);
+        }
+
         if (! $this->isRoomAvailable($room, $stay->reservation->check_in, $stay->reservation->check_out)) {
             throw ValidationException::withMessages([
                 'room_id' => ['Room is not available for the selected dates.'],
             ]);
         }
+
+        $previousRoom = $stay->assignedRoom;
 
         $assignments = $stay->room_assignments ?? [];
         $assignments[] = [
@@ -59,6 +69,23 @@ class FrontDeskService
             'assigned_room_id' => $roomId,
             'room_assignments' => $assignments,
         ]);
+
+        if ($stay->status === 'checked_in') {
+            $this->updateRoomStatusOnMove($previousRoom, $room);
+        }
+
+        $stay->reservation()->update([
+            'room_id' => $roomId,
+        ]);
+
+        if ($actor = auth()->user()) {
+            $this->auditLogService->record($actor, 'stay.room.assigned', 'stay', [
+                'stay_id' => $stay->id,
+                'reservation_id' => $stay->reservation_id,
+                'from_room_id' => $previousRoom?->id,
+                'to_room_id' => $room->id,
+            ]);
+        }
 
         return $stay->fresh();
     }
@@ -171,6 +198,43 @@ class FrontDeskService
                     ->where('check_out', '>', $checkIn);
             })
             ->exists();
+    }
+
+    private function updateRoomStatusOnMove(?Room $fromRoom, Room $toRoom): void
+    {
+        if ($fromRoom && $fromRoom->id !== $toRoom->id) {
+            $fromStatus = $fromRoom->status;
+            if ($fromStatus !== 'available') {
+                $fromRoom->update([
+                    'status' => 'available',
+                    'housekeeping_status' => 'dirty',
+                ]);
+
+                RoomStatusLog::create([
+                    'room_id' => $fromRoom->id,
+                    'from_status' => $fromStatus,
+                    'to_status' => 'available',
+                    'changed_by' => auth()->id(),
+                    'changed_at' => now(),
+                ]);
+            }
+        }
+
+        $toStatus = $toRoom->status;
+        if ($toStatus !== 'occupied') {
+            $toRoom->update([
+                'status' => 'occupied',
+                'housekeeping_status' => $toRoom->housekeeping_status ?? 'dirty',
+            ]);
+
+            RoomStatusLog::create([
+                'room_id' => $toRoom->id,
+                'from_status' => $toStatus,
+                'to_status' => 'occupied',
+                'changed_by' => auth()->id(),
+                'changed_at' => now(),
+            ]);
+        }
     }
 
     /**

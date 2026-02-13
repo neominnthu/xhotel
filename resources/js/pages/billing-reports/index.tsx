@@ -23,6 +23,8 @@ type RevenueData = {
     }>;
     total_charges: number;
     total_payments: number;
+    total_tax: number;
+    gross_revenue: number;
 };
 
 type OutstandingBalance = {
@@ -167,10 +169,10 @@ export default function BillingReportsIndex({
                 </Card>
 
                 {/* Summary Cards */}
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Charges</CardTitle>
+                            <CardTitle className="text-sm font-medium">Net Charges</CardTitle>
                             <DollarSign className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
@@ -179,6 +181,37 @@ export default function BillingReportsIndex({
                             </div>
                             <p className="text-xs text-muted-foreground">
                                 In selected period
+                            </p>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Tax Collected</CardTitle>
+                            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">
+                                {formatCurrency(revenueData.total_tax, 'MMK')}
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                In selected period
+                            </p>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Gross Revenue</CardTitle>
+                            <CalendarDays className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">
+                                {formatCurrency(
+                                    revenueData.gross_revenue,
+                                    'MMK'
+                                )}
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                Net + tax included
                             </p>
                         </CardContent>
                     </Card>
@@ -210,20 +243,6 @@ export default function BillingReportsIndex({
                             </div>
                             <p className="text-xs text-muted-foreground">
                                 Across all folios
-                            </p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Payment Methods</CardTitle>
-                            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">
-                                {paymentMethods.length}
-                            </div>
-                            <p className="text-xs text-muted-foreground">
-                                Active methods
                             </p>
                         </CardContent>
                     </Card>

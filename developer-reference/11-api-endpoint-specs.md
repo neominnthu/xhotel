@@ -414,6 +414,22 @@ Response
   "actual_check_out": "2026-02-16T04:00:00Z"
 }
 
+### POST /front-desk/stays/{id}/extend
+
+Request
+{
+  "check_out": "2026-02-18"
+}
+
+Response
+{
+  "message": "Stay extended successfully",
+  "reservation": {
+    "id": 1201,
+    "check_out": "2026-02-18"
+  }
+}
+
 ## Folios, Charges, Payments
 
 ### GET /folios/{id}
@@ -430,6 +446,9 @@ Response
   ],
   "payments": [
     {"id": 1, "method": "cash", "amount": 50000, "currency": "MMK"}
+  ],
+  "refunds": [
+    {"id": 1, "method": "cash", "amount": 5000, "currency": "MMK", "status": "approved"}
   ]
 }
 
@@ -469,6 +488,41 @@ Response
   "method": "card",
   "amount": 100000,
   "currency": "MMK"
+}
+
+### POST /folios/{id}/refunds
+
+Request
+{
+  "method": "cash",
+  "amount": 5000,
+  "currency": "MMK",
+  "reference": "RF-10001",
+  "reason": "Deposit return"
+}
+
+Response
+{
+  "id": 55,
+  "method": "cash",
+  "amount": 5000,
+  "currency": "MMK",
+  "status": "pending"
+}
+
+### POST /refunds/{id}/approve
+
+Request
+{
+  "reference": "RF-10001"
+}
+
+Response
+{
+  "id": 55,
+  "status": "approved",
+  "approved_at": "2026-02-14T03:15:00Z",
+  "refunded_at": "2026-02-14T03:15:00Z"
 }
 
 ### GET /folios/{id}/statement

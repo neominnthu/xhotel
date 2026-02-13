@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Folios\FolioPageController::store
- * @see app/Http/Controllers/Folios/FolioPageController.php:15
+ * @see app/Http/Controllers/Folios/FolioPageController.php:19
  * @route '/folios/{folio}/charges'
  */
 export const store = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\Folios\FolioPageController::store
- * @see app/Http/Controllers/Folios/FolioPageController.php:15
+ * @see app/Http/Controllers/Folios/FolioPageController.php:19
  * @route '/folios/{folio}/charges'
  */
 store.url = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ store.url = (args: { folio: number | { id: number } } | [folio: number | { id: n
 
 /**
 * @see \App\Http\Controllers\Folios\FolioPageController::store
- * @see app/Http/Controllers/Folios/FolioPageController.php:15
+ * @see app/Http/Controllers/Folios/FolioPageController.php:19
  * @route '/folios/{folio}/charges'
  */
 store.post = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -59,7 +59,7 @@ store.post = (args: { folio: number | { id: number } } | [folio: number | { id: 
 
     /**
 * @see \App\Http\Controllers\Folios\FolioPageController::store
- * @see app/Http/Controllers/Folios/FolioPageController.php:15
+ * @see app/Http/Controllers/Folios/FolioPageController.php:19
  * @route '/folios/{folio}/charges'
  */
     const storeForm = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -69,7 +69,7 @@ store.post = (args: { folio: number | { id: number } } | [folio: number | { id: 
 
             /**
 * @see \App\Http\Controllers\Folios\FolioPageController::store
- * @see app/Http/Controllers/Folios/FolioPageController.php:15
+ * @see app/Http/Controllers/Folios/FolioPageController.php:19
  * @route '/folios/{folio}/charges'
  */
         storeForm.post = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

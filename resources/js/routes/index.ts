@@ -361,7 +361,7 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     dashboard.form = dashboardForm
 /**
 * @see \App\Http\Controllers\FrontDesk\FrontDeskPageController::frontDesk
- * @see app/Http/Controllers/FrontDesk/FrontDeskPageController.php:19
+ * @see app/Http/Controllers/FrontDesk/FrontDeskPageController.php:17
  * @route '/front-desk'
  */
 export const frontDesk = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -376,7 +376,7 @@ frontDesk.definition = {
 
 /**
 * @see \App\Http\Controllers\FrontDesk\FrontDeskPageController::frontDesk
- * @see app/Http/Controllers/FrontDesk/FrontDeskPageController.php:19
+ * @see app/Http/Controllers/FrontDesk/FrontDeskPageController.php:17
  * @route '/front-desk'
  */
 frontDesk.url = (options?: RouteQueryOptions) => {
@@ -385,7 +385,7 @@ frontDesk.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\FrontDesk\FrontDeskPageController::frontDesk
- * @see app/Http/Controllers/FrontDesk/FrontDeskPageController.php:19
+ * @see app/Http/Controllers/FrontDesk/FrontDeskPageController.php:17
  * @route '/front-desk'
  */
 frontDesk.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -394,7 +394,7 @@ frontDesk.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\FrontDesk\FrontDeskPageController::frontDesk
- * @see app/Http/Controllers/FrontDesk/FrontDeskPageController.php:19
+ * @see app/Http/Controllers/FrontDesk/FrontDeskPageController.php:17
  * @route '/front-desk'
  */
 frontDesk.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -404,7 +404,7 @@ frontDesk.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\FrontDesk\FrontDeskPageController::frontDesk
- * @see app/Http/Controllers/FrontDesk/FrontDeskPageController.php:19
+ * @see app/Http/Controllers/FrontDesk/FrontDeskPageController.php:17
  * @route '/front-desk'
  */
     const frontDeskForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -414,7 +414,7 @@ frontDesk.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\FrontDesk\FrontDeskPageController::frontDesk
- * @see app/Http/Controllers/FrontDesk/FrontDeskPageController.php:19
+ * @see app/Http/Controllers/FrontDesk/FrontDeskPageController.php:17
  * @route '/front-desk'
  */
         frontDeskForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -423,7 +423,7 @@ frontDesk.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\FrontDesk\FrontDeskPageController::frontDesk
- * @see app/Http/Controllers/FrontDesk/FrontDeskPageController.php:19
+ * @see app/Http/Controllers/FrontDesk/FrontDeskPageController.php:17
  * @route '/front-desk'
  */
         frontDeskForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

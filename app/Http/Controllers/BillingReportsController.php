@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Folio;
 use App\Models\Charge;
+use App\Models\Folio;
 use App\Models\Payment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -43,23 +43,32 @@ class BillingReportsController extends Controller
 
     private function getRevenueAnalytics(string $dateFrom, string $dateTo): array
     {
-        $charges = Charge::whereBetween('posted_at', [$dateFrom, $dateTo])
+        $from = Carbon::parse($dateFrom)->startOfDay();
+        $to = Carbon::parse($dateTo)->endOfDay();
+
+        $charges = Charge::whereBetween('posted_at', [$from, $to])
             ->selectRaw('DATE(posted_at) as date, SUM(amount) as total_amount, currency')
             ->groupBy('date', 'currency')
             ->orderBy('date')
             ->get();
 
-        $payments = Payment::whereBetween('received_at', [$dateFrom, $dateTo])
+        $payments = Payment::whereBetween('received_at', [$from, $to])
             ->selectRaw('DATE(received_at) as date, SUM(amount) as total_amount, currency')
             ->groupBy('date', 'currency')
             ->orderBy('date')
             ->get();
 
+        $totalCharges = (int) Charge::whereBetween('posted_at', [$from, $to])->sum('amount');
+        $totalTax = (int) Charge::whereBetween('posted_at', [$from, $to])->sum('tax_amount');
+        $grossRevenue = $totalCharges + $totalTax;
+
         return [
             'charges' => $charges,
             'payments' => $payments,
-            'total_charges' => $charges->sum('total_amount'),
-            'total_payments' => $payments->sum('total_amount'),
+            'total_charges' => $totalCharges,
+            'total_payments' => (int) $payments->sum('total_amount'),
+            'total_tax' => $totalTax,
+            'gross_revenue' => $grossRevenue,
         ];
     }
 

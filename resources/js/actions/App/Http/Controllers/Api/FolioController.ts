@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Api\FolioController::show
- * @see app/Http/Controllers/Api/FolioController.php:15
+ * @see app/Http/Controllers/Api/FolioController.php:17
  * @route '/api/v1/folios/{folio}'
  */
 export const show = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\Api\FolioController::show
- * @see app/Http/Controllers/Api/FolioController.php:15
+ * @see app/Http/Controllers/Api/FolioController.php:17
  * @route '/api/v1/folios/{folio}'
  */
 show.url = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ show.url = (args: { folio: number | { id: number } } | [folio: number | { id: nu
 
 /**
 * @see \App\Http\Controllers\Api\FolioController::show
- * @see app/Http/Controllers/Api/FolioController.php:15
+ * @see app/Http/Controllers/Api/FolioController.php:17
  * @route '/api/v1/folios/{folio}'
  */
 show.get = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -58,7 +58,7 @@ show.get = (args: { folio: number | { id: number } } | [folio: number | { id: nu
 })
 /**
 * @see \App\Http\Controllers\Api\FolioController::show
- * @see app/Http/Controllers/Api/FolioController.php:15
+ * @see app/Http/Controllers/Api/FolioController.php:17
  * @route '/api/v1/folios/{folio}'
  */
 show.head = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -68,7 +68,7 @@ show.head = (args: { folio: number | { id: number } } | [folio: number | { id: n
 
     /**
 * @see \App\Http\Controllers\Api\FolioController::show
- * @see app/Http/Controllers/Api/FolioController.php:15
+ * @see app/Http/Controllers/Api/FolioController.php:17
  * @route '/api/v1/folios/{folio}'
  */
     const showForm = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -78,7 +78,7 @@ show.head = (args: { folio: number | { id: number } } | [folio: number | { id: n
 
             /**
 * @see \App\Http\Controllers\Api\FolioController::show
- * @see app/Http/Controllers/Api/FolioController.php:15
+ * @see app/Http/Controllers/Api/FolioController.php:17
  * @route '/api/v1/folios/{folio}'
  */
         showForm.get = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -87,7 +87,7 @@ show.head = (args: { folio: number | { id: number } } | [folio: number | { id: n
         })
             /**
 * @see \App\Http\Controllers\Api\FolioController::show
- * @see app/Http/Controllers/Api/FolioController.php:15
+ * @see app/Http/Controllers/Api/FolioController.php:17
  * @route '/api/v1/folios/{folio}'
  */
         showForm.head = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -103,7 +103,7 @@ show.head = (args: { folio: number | { id: number } } | [folio: number | { id: n
     show.form = showForm
 /**
 * @see \App\Http\Controllers\Api\FolioController::storeCharge
- * @see app/Http/Controllers/Api/FolioController.php:47
+ * @see app/Http/Controllers/Api/FolioController.php:61
  * @route '/api/v1/folios/{folio}/charges'
  */
 export const storeCharge = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -118,7 +118,7 @@ storeCharge.definition = {
 
 /**
 * @see \App\Http\Controllers\Api\FolioController::storeCharge
- * @see app/Http/Controllers/Api/FolioController.php:47
+ * @see app/Http/Controllers/Api/FolioController.php:61
  * @route '/api/v1/folios/{folio}/charges'
  */
 storeCharge.url = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -151,7 +151,7 @@ storeCharge.url = (args: { folio: number | { id: number } } | [folio: number | {
 
 /**
 * @see \App\Http\Controllers\Api\FolioController::storeCharge
- * @see app/Http/Controllers/Api/FolioController.php:47
+ * @see app/Http/Controllers/Api/FolioController.php:61
  * @route '/api/v1/folios/{folio}/charges'
  */
 storeCharge.post = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -161,7 +161,7 @@ storeCharge.post = (args: { folio: number | { id: number } } | [folio: number | 
 
     /**
 * @see \App\Http\Controllers\Api\FolioController::storeCharge
- * @see app/Http/Controllers/Api/FolioController.php:47
+ * @see app/Http/Controllers/Api/FolioController.php:61
  * @route '/api/v1/folios/{folio}/charges'
  */
     const storeChargeForm = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -171,7 +171,7 @@ storeCharge.post = (args: { folio: number | { id: number } } | [folio: number | 
 
             /**
 * @see \App\Http\Controllers\Api\FolioController::storeCharge
- * @see app/Http/Controllers/Api/FolioController.php:47
+ * @see app/Http/Controllers/Api/FolioController.php:61
  * @route '/api/v1/folios/{folio}/charges'
  */
         storeChargeForm.post = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -182,7 +182,7 @@ storeCharge.post = (args: { folio: number | { id: number } } | [folio: number | 
     storeCharge.form = storeChargeForm
 /**
 * @see \App\Http\Controllers\Api\FolioController::storePayment
- * @see app/Http/Controllers/Api/FolioController.php:65
+ * @see app/Http/Controllers/Api/FolioController.php:79
  * @route '/api/v1/folios/{folio}/payments'
  */
 export const storePayment = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -197,7 +197,7 @@ storePayment.definition = {
 
 /**
 * @see \App\Http\Controllers\Api\FolioController::storePayment
- * @see app/Http/Controllers/Api/FolioController.php:65
+ * @see app/Http/Controllers/Api/FolioController.php:79
  * @route '/api/v1/folios/{folio}/payments'
  */
 storePayment.url = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -230,7 +230,7 @@ storePayment.url = (args: { folio: number | { id: number } } | [folio: number | 
 
 /**
 * @see \App\Http\Controllers\Api\FolioController::storePayment
- * @see app/Http/Controllers/Api/FolioController.php:65
+ * @see app/Http/Controllers/Api/FolioController.php:79
  * @route '/api/v1/folios/{folio}/payments'
  */
 storePayment.post = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -240,7 +240,7 @@ storePayment.post = (args: { folio: number | { id: number } } | [folio: number |
 
     /**
 * @see \App\Http\Controllers\Api\FolioController::storePayment
- * @see app/Http/Controllers/Api/FolioController.php:65
+ * @see app/Http/Controllers/Api/FolioController.php:79
  * @route '/api/v1/folios/{folio}/payments'
  */
     const storePaymentForm = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -250,7 +250,7 @@ storePayment.post = (args: { folio: number | { id: number } } | [folio: number |
 
             /**
 * @see \App\Http\Controllers\Api\FolioController::storePayment
- * @see app/Http/Controllers/Api/FolioController.php:65
+ * @see app/Http/Controllers/Api/FolioController.php:79
  * @route '/api/v1/folios/{folio}/payments'
  */
         storePaymentForm.post = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -259,6 +259,85 @@ storePayment.post = (args: { folio: number | { id: number } } | [folio: number |
         })
     
     storePayment.form = storePaymentForm
-const FolioController = { show, storeCharge, storePayment }
+/**
+* @see \App\Http\Controllers\Api\FolioController::storeRefund
+ * @see app/Http/Controllers/Api/FolioController.php:97
+ * @route '/api/v1/folios/{folio}/refunds'
+ */
+export const storeRefund = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: storeRefund.url(args, options),
+    method: 'post',
+})
+
+storeRefund.definition = {
+    methods: ["post"],
+    url: '/api/v1/folios/{folio}/refunds',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\Api\FolioController::storeRefund
+ * @see app/Http/Controllers/Api/FolioController.php:97
+ * @route '/api/v1/folios/{folio}/refunds'
+ */
+storeRefund.url = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { folio: args }
+    }
+
+            if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
+            args = { folio: args.id }
+        }
+    
+    if (Array.isArray(args)) {
+        args = {
+                    folio: args[0],
+                }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+                        folio: typeof args.folio === 'object'
+                ? args.folio.id
+                : args.folio,
+                }
+
+    return storeRefund.definition.url
+            .replace('{folio}', parsedArgs.folio.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Api\FolioController::storeRefund
+ * @see app/Http/Controllers/Api/FolioController.php:97
+ * @route '/api/v1/folios/{folio}/refunds'
+ */
+storeRefund.post = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: storeRefund.url(args, options),
+    method: 'post',
+})
+
+    /**
+* @see \App\Http\Controllers\Api\FolioController::storeRefund
+ * @see app/Http/Controllers/Api/FolioController.php:97
+ * @route '/api/v1/folios/{folio}/refunds'
+ */
+    const storeRefundForm = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: storeRefund.url(args, options),
+        method: 'post',
+    })
+
+            /**
+* @see \App\Http\Controllers\Api\FolioController::storeRefund
+ * @see app/Http/Controllers/Api/FolioController.php:97
+ * @route '/api/v1/folios/{folio}/refunds'
+ */
+        storeRefundForm.post = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: storeRefund.url(args, options),
+            method: 'post',
+        })
+    
+    storeRefund.form = storeRefundForm
+const FolioController = { show, storeCharge, storePayment, storeRefund }
 
 export default FolioController

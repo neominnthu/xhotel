@@ -1,9 +1,25 @@
 import { Head, Link } from '@inertiajs/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AppLayout from '@/layouts/app-layout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { dashboard, frontDesk } from '@/routes';
 import type { BreadcrumbItem } from '@/types';
@@ -11,13 +27,25 @@ import type { BreadcrumbItem } from '@/types';
 type Guest = {
     id: number;
     stay_id?: number;
+    reservation_id?: number;
     guest_name: string;
     room_number?: string;
     room_type: Record<string, string> | string;
+    room_type_id?: number;
+    reservation_check_in?: string;
     check_in?: string;
     check_out: string;
     status?: string;
     folio_balance: number;
+};
+
+type RoomOption = {
+    id: number;
+    number: string;
+    room_type?: Record<string, string> | string;
+    floor?: string | number | null;
+    room_status?: string;
+    housekeeping_status?: string;
 };
 
 type Props = {
@@ -61,6 +89,150 @@ function getStatusBadge(status: string) {
 
 export default function FrontDeskIndex({ expectedArrivals, inHouseGuests, expectedDepartures }: Props) {
     const [activeTab, setActiveTab] = useState('arrivals');
+    const [extendStay, setExtendStay] = useState<Guest | null>(null);
+    const [extendCheckOut, setExtendCheckOut] = useState('');
+    const [extendError, setExtendError] = useState<string | null>(null);
+    const [extendSaving, setExtendSaving] = useState(false);
+    const [moveStay, setMoveStay] = useState<Guest | null>(null);
+    const [availableRooms, setAvailableRooms] = useState<RoomOption[]>([]);
+    const [moveRoomId, setMoveRoomId] = useState('');
+    const [moveError, setMoveError] = useState<string | null>(null);
+    const [roomsLoading, setRoomsLoading] = useState(false);
+    const [moveSaving, setMoveSaving] = useState(false);
+
+    const quickCheckInId = expectedArrivals[0]?.reservation_id;
+    const quickCheckOutId = expectedDepartures[0]?.stay_id ?? expectedDepartures[0]?.id;
+
+    const getCsrfToken = () => {
+        const token = document
+            .querySelector('meta[name="csrf-token"]')
+            ?.getAttribute('content');
+        return token ?? '';
+    };
+
+    useEffect(() => {
+        if (!moveStay) {
+            return;
+        }
+
+        const checkInDate = moveStay.reservation_check_in ?? moveStay.check_in;
+        const checkOutDate = moveStay.check_out;
+
+        if (!checkInDate || !checkOutDate) {
+            setMoveError('ရွေးချယ်ထားသော တည်းခိုမှု၏ နေ့စွဲကို မတွေ့ပါ။');
+            setAvailableRooms([]);
+            return;
+        }
+
+        const controller = new AbortController();
+        const fetchRooms = async () => {
+            setRoomsLoading(true);
+            setMoveError(null);
+            setAvailableRooms([]);
+            setMoveRoomId('');
+
+            const params = new URLSearchParams({
+                check_in_date: checkInDate,
+                check_out_date: checkOutDate,
+            });
+
+            if (moveStay.room_type_id) {
+                params.append('room_type_id', String(moveStay.room_type_id));
+            }
+
+            try {
+                const response = await fetch(`/api/v1/front-desk/rooms/available?${params.toString()}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    signal: controller.signal,
+                });
+
+                if (!response.ok) {
+                    const payload = await response.json();
+                    setMoveError(payload?.message ?? 'အခန်းများကို မယူနိုင်ပါ။');
+                    return;
+                }
+
+                const payload = await response.json();
+                setAvailableRooms(payload?.available_rooms ?? []);
+            } catch (error) {
+                if (!(error instanceof DOMException && error.name === 'AbortError')) {
+                    setMoveError('အခန်းများကို မယူနိုင်ပါ။');
+                }
+            } finally {
+                setRoomsLoading(false);
+            }
+        };
+
+        fetchRooms();
+
+        return () => controller.abort();
+    }, [moveStay]);
+
+    const submitExtendStay = async () => {
+        if (!extendStay) {
+            return;
+        }
+
+        const stayId = extendStay.stay_id ?? extendStay.id;
+
+        setExtendSaving(true);
+        setExtendError(null);
+
+        const response = await fetch(`/api/v1/front-desk/stays/${stayId}/extend`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': getCsrfToken(),
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify({
+                check_out: extendCheckOut,
+            }),
+        });
+
+        if (!response.ok) {
+            const payload = await response.json();
+            setExtendError(payload?.message ?? 'တည်းခိုချိန် တိုးမရပါ။');
+            setExtendSaving(false);
+            return;
+        }
+
+        window.location.reload();
+    };
+
+    const submitMoveRoom = async () => {
+        if (!moveStay) {
+            return;
+        }
+
+        const stayId = moveStay.stay_id ?? moveStay.id;
+
+        setMoveSaving(true);
+        setMoveError(null);
+
+        const response = await fetch(`/api/v1/front-desk/stays/${stayId}/assign-room`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': getCsrfToken(),
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify({
+                room_id: Number(moveRoomId),
+            }),
+        });
+
+        if (!response.ok) {
+            const payload = await response.json();
+            setMoveError(payload?.message ?? 'အခန်းပြောင်းမရပါ။');
+            setMoveSaving(false);
+            return;
+        }
+
+        window.location.reload();
+    };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -78,11 +250,30 @@ export default function FrontDeskIndex({ expectedArrivals, inHouseGuests, expect
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <Button variant="outline" size="sm">
-                            Quick Check-in
-                        </Button>
-                        <Button variant="outline" size="sm">
-                            Room Status
+                        {quickCheckInId ? (
+                            <Button asChild variant="outline" size="sm">
+                                <Link href={`/front-desk/check-in/${quickCheckInId}`}>
+                                    Quick Check-in
+                                </Link>
+                            </Button>
+                        ) : (
+                            <Button variant="outline" size="sm" disabled>
+                                Quick Check-in
+                            </Button>
+                        )}
+                        {quickCheckOutId ? (
+                            <Button asChild variant="outline" size="sm">
+                                <Link href={`/front-desk/check-out/${quickCheckOutId}`}>
+                                    Quick Check-out
+                                </Link>
+                            </Button>
+                        ) : (
+                            <Button variant="outline" size="sm" disabled>
+                                Quick Check-out
+                            </Button>
+                        )}
+                        <Button asChild variant="outline" size="sm">
+                            <Link href="/housekeeping">Room Status</Link>
                         </Button>
                     </div>
                 </div>
@@ -140,7 +331,9 @@ export default function FrontDeskIndex({ expectedArrivals, inHouseGuests, expect
                                                         </Badge>
                                                     )}
                                                     <Button size="sm" asChild>
-                                                        <Link href={`/front-desk/check-in/${guest.id}`}>
+                                                        <Link
+                                                            href={`/front-desk/check-in/${guest.reservation_id ?? guest.id}`}
+                                                        >
                                                             Check In
                                                         </Link>
                                                     </Button>
@@ -191,8 +384,31 @@ export default function FrontDeskIndex({ expectedArrivals, inHouseGuests, expect
                                                     <Button variant="outline" size="sm">
                                                         View Folio
                                                     </Button>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => {
+                                                            setExtendStay(guest);
+                                                            setExtendCheckOut(guest.check_out);
+                                                            setExtendError(null);
+                                                        }}
+                                                    >
+                                                        Extend Stay
+                                                    </Button>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => {
+                                                            setMoveStay(guest);
+                                                            setMoveError(null);
+                                                        }}
+                                                    >
+                                                        Move Room
+                                                    </Button>
                                                     <Button size="sm" asChild>
-                                                        <Link href={`/front-desk/check-out/${guest.stay_id}`}>
+                                                        <Link
+                                                            href={`/front-desk/check-out/${guest.stay_id ?? guest.id}`}
+                                                        >
                                                             Check Out
                                                         </Link>
                                                     </Button>
@@ -244,7 +460,9 @@ export default function FrontDeskIndex({ expectedArrivals, inHouseGuests, expect
                                                         View Folio
                                                     </Button>
                                                     <Button size="sm" asChild>
-                                                        <Link href={`/front-desk/check-out/${guest.stay_id}`}>
+                                                        <Link
+                                                            href={`/front-desk/check-out/${guest.stay_id ?? guest.id}`}
+                                                        >
                                                             Check Out
                                                         </Link>
                                                     </Button>
@@ -258,6 +476,128 @@ export default function FrontDeskIndex({ expectedArrivals, inHouseGuests, expect
                     </TabsContent>
                 </Tabs>
             </div>
+
+            <Dialog
+                open={Boolean(extendStay)}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        setExtendStay(null);
+                        setExtendError(null);
+                    }
+                }}
+            >
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Extend Stay</DialogTitle>
+                        <DialogDescription>
+                            Extend the check-out date for the current stay.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium" htmlFor="extend-check-out">
+                                New check-out date
+                            </label>
+                            <Input
+                                id="extend-check-out"
+                                type="date"
+                                value={extendCheckOut}
+                                onChange={(event) => setExtendCheckOut(event.target.value)}
+                            />
+                        </div>
+
+                        {extendError && (
+                            <p className="text-sm text-destructive">
+                                {extendError}
+                            </p>
+                        )}
+                    </div>
+
+                    <DialogFooter className="gap-2">
+                        <Button
+                            variant="secondary"
+                            onClick={() => setExtendStay(null)}
+                            disabled={extendSaving}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={submitExtendStay}
+                            disabled={extendSaving || !extendCheckOut}
+                        >
+                            {extendSaving ? 'Extending...' : 'Extend Stay'}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog
+                open={Boolean(moveStay)}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        setMoveStay(null);
+                        setMoveError(null);
+                        setAvailableRooms([]);
+                        setMoveRoomId('');
+                    }
+                }}
+            >
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Move Room</DialogTitle>
+                        <DialogDescription>
+                            Assign a new room for the current stay.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium" htmlFor="move-room">
+                                Available rooms
+                            </label>
+                            <Select value={moveRoomId} onValueChange={setMoveRoomId}>
+                                <SelectTrigger id="move-room">
+                                    <SelectValue
+                                        placeholder={
+                                            roomsLoading
+                                                ? 'Loading rooms...'
+                                                : 'Select a room'
+                                        }
+                                    />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {availableRooms.map((room) => (
+                                        <SelectItem key={room.id} value={String(room.id)}>
+                                            Room {room.number}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        {moveError && (
+                            <p className="text-sm text-destructive">{moveError}</p>
+                        )}
+                    </div>
+
+                    <DialogFooter className="gap-2">
+                        <Button
+                            variant="secondary"
+                            onClick={() => setMoveStay(null)}
+                            disabled={moveSaving}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={submitMoveRoom}
+                            disabled={moveSaving || !moveRoomId}
+                        >
+                            {moveSaving ? 'Moving...' : 'Move Room'}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </AppLayout>
     );
 }

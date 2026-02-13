@@ -146,4 +146,121 @@ class StayCheckInOutTest extends TestCase
         $this->assertEquals('closed', $folio->status);
         $this->assertEquals(0, $folio->balance);
     }
+
+    public function test_front_desk_can_extend_stay_and_add_charges(): void
+    {
+        $property = Property::factory()->create();
+        $roomType = RoomType::factory()->create([
+            'property_id' => $property->id,
+            'base_rate' => 10000,
+        ]);
+        $room = Room::factory()->create([
+            'property_id' => $property->id,
+            'room_type_id' => $roomType->id,
+            'status' => 'occupied',
+            'housekeeping_status' => 'dirty',
+        ]);
+        $reservation = Reservation::factory()->create([
+            'property_id' => $property->id,
+            'room_type_id' => $roomType->id,
+            'room_id' => $room->id,
+            'status' => 'checked_in',
+            'check_in' => now()->toDateString(),
+            'check_out' => now()->addDay()->toDateString(),
+        ]);
+        $stay = Stay::create([
+            'reservation_id' => $reservation->id,
+            'status' => 'checked_in',
+            'assigned_room_id' => $room->id,
+            'actual_check_in' => now(),
+        ]);
+        $folio = Folio::create([
+            'reservation_id' => $reservation->id,
+            'currency' => 'MMK',
+            'total' => 0,
+            'balance' => 0,
+            'status' => 'open',
+        ]);
+        $user = User::factory()->create([
+            'role' => 'front_desk',
+            'property_id' => $property->id,
+        ]);
+
+        $newCheckOut = now()->addDays(2)->toDateString();
+
+        $response = $this->actingAs($user)->postJson(
+            "/api/v1/front-desk/stays/{$stay->id}/extend",
+            ['check_out' => $newCheckOut]
+        );
+
+        $response->assertOk();
+
+        $reservation->refresh();
+        $folio->refresh();
+
+        $this->assertEquals($newCheckOut, $reservation->check_out->toDateString());
+        $this->assertEquals(10500, $folio->total);
+
+        $this->assertDatabaseHas('charges', [
+            'folio_id' => $folio->id,
+            'type' => 'accommodation',
+            'amount' => 10000,
+            'tax_amount' => 500,
+        ]);
+    }
+
+    public function test_front_desk_can_move_room_for_checked_in_stay(): void
+    {
+        $property = Property::factory()->create();
+        $roomType = RoomType::factory()->create([
+            'property_id' => $property->id,
+        ]);
+        $currentRoom = Room::factory()->create([
+            'property_id' => $property->id,
+            'room_type_id' => $roomType->id,
+            'status' => 'occupied',
+            'housekeeping_status' => 'dirty',
+        ]);
+        $newRoom = Room::factory()->create([
+            'property_id' => $property->id,
+            'room_type_id' => $roomType->id,
+            'status' => 'available',
+            'housekeeping_status' => 'clean',
+        ]);
+        $reservation = Reservation::factory()->create([
+            'property_id' => $property->id,
+            'room_type_id' => $roomType->id,
+            'room_id' => $currentRoom->id,
+            'status' => 'checked_in',
+            'check_in' => now()->toDateString(),
+            'check_out' => now()->addDay()->toDateString(),
+        ]);
+        $stay = Stay::create([
+            'reservation_id' => $reservation->id,
+            'status' => 'checked_in',
+            'assigned_room_id' => $currentRoom->id,
+            'actual_check_in' => now(),
+        ]);
+        $user = User::factory()->create([
+            'role' => 'front_desk',
+            'property_id' => $property->id,
+        ]);
+
+        $response = $this->actingAs($user)->postJson(
+            "/api/v1/front-desk/stays/{$stay->id}/assign-room",
+            ['room_id' => $newRoom->id]
+        );
+
+        $response->assertOk();
+
+        $stay->refresh();
+        $reservation->refresh();
+        $currentRoom->refresh();
+        $newRoom->refresh();
+
+        $this->assertEquals($newRoom->id, $stay->assigned_room_id);
+        $this->assertEquals($newRoom->id, $reservation->room_id);
+        $this->assertEquals('available', $currentRoom->status);
+        $this->assertEquals('occupied', $newRoom->status);
+    }
 }

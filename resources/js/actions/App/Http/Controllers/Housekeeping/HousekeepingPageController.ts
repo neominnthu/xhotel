@@ -145,7 +145,7 @@ update.patch = (args: { task: number | { id: number } } | [task: number | { id: 
     update.form = updateForm
 /**
 * @see \App\Http\Controllers\Housekeeping\HousekeepingPageController::exportMethod
- * @see app/Http/Controllers/Housekeeping/HousekeepingPageController.php:77
+ * @see app/Http/Controllers/Housekeeping/HousekeepingPageController.php:93
  * @route '/housekeeping/tasks.csv'
  */
 export const exportMethod = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -160,7 +160,7 @@ exportMethod.definition = {
 
 /**
 * @see \App\Http\Controllers\Housekeeping\HousekeepingPageController::exportMethod
- * @see app/Http/Controllers/Housekeeping/HousekeepingPageController.php:77
+ * @see app/Http/Controllers/Housekeeping/HousekeepingPageController.php:93
  * @route '/housekeeping/tasks.csv'
  */
 exportMethod.url = (options?: RouteQueryOptions) => {
@@ -169,7 +169,7 @@ exportMethod.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Housekeeping\HousekeepingPageController::exportMethod
- * @see app/Http/Controllers/Housekeeping/HousekeepingPageController.php:77
+ * @see app/Http/Controllers/Housekeeping/HousekeepingPageController.php:93
  * @route '/housekeeping/tasks.csv'
  */
 exportMethod.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -178,7 +178,7 @@ exportMethod.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Housekeeping\HousekeepingPageController::exportMethod
- * @see app/Http/Controllers/Housekeeping/HousekeepingPageController.php:77
+ * @see app/Http/Controllers/Housekeeping/HousekeepingPageController.php:93
  * @route '/housekeeping/tasks.csv'
  */
 exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -188,7 +188,7 @@ exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Housekeeping\HousekeepingPageController::exportMethod
- * @see app/Http/Controllers/Housekeeping/HousekeepingPageController.php:77
+ * @see app/Http/Controllers/Housekeeping/HousekeepingPageController.php:93
  * @route '/housekeeping/tasks.csv'
  */
     const exportMethodForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -198,7 +198,7 @@ exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Housekeeping\HousekeepingPageController::exportMethod
- * @see app/Http/Controllers/Housekeeping/HousekeepingPageController.php:77
+ * @see app/Http/Controllers/Housekeeping/HousekeepingPageController.php:93
  * @route '/housekeeping/tasks.csv'
  */
         exportMethodForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -207,7 +207,7 @@ exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Housekeeping\HousekeepingPageController::exportMethod
- * @see app/Http/Controllers/Housekeeping/HousekeepingPageController.php:77
+ * @see app/Http/Controllers/Housekeeping/HousekeepingPageController.php:93
  * @route '/housekeeping/tasks.csv'
  */
         exportMethodForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

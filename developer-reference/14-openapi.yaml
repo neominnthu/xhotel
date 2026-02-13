@@ -209,6 +209,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Stay'
+  /front-desk/stays/{id}/extend:
+    post:
+      tags: [Stays]
+      summary: Extend stay
+      parameters:
+        - $ref: '#/components/parameters/stayId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StayExtendRequest'
+      responses:
+        '200':
+          description: Stay extended
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StayExtendResponse'
   /folios/{id}:
     get:
       tags: [Folios]
@@ -260,6 +279,44 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Payment'
+  /folios/{id}/refunds:
+    post:
+      tags: [Folios]
+      summary: Request refund
+      parameters:
+        - $ref: '#/components/parameters/folioId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefundCreateRequest'
+      responses:
+        '200':
+          description: Refund requested
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Refund'
+  /refunds/{id}/approve:
+    post:
+      tags: [Folios]
+      summary: Approve refund
+      parameters:
+        - $ref: '#/components/parameters/refundId'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefundApproveRequest'
+      responses:
+        '200':
+          description: Refund approved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Refund'
   /folios/{id}/statement:
     get:
       tags: [Folios]
@@ -413,6 +470,12 @@ components:
       schema:
         type: integer
     folioId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    refundId:
       name: id
       in: path
       required: true
@@ -691,6 +754,30 @@ components:
         payment:
           $ref: '#/components/schemas/PaymentCreateRequest'
       required: [payment]
+    StayExtendRequest:
+      type: object
+      properties:
+        check_out:
+          type: string
+          format: date
+        notes:
+          type: string
+      required: [check_out]
+    StayExtendResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        reservation:
+          type: object
+          properties:
+            id:
+              type: integer
+            check_out:
+              type: string
+              format: date
+          required: [id, check_out]
+      required: [message, reservation]
     Money:
       type: object
       properties:
@@ -723,6 +810,24 @@ components:
         currency:
           type: string
       required: [id, method, amount, currency]
+    Refund:
+      type: object
+      properties:
+        id:
+          type: integer
+        method:
+          type: string
+        amount:
+          type: integer
+        currency:
+          type: string
+        status:
+          type: string
+        reference:
+          type: string
+        reason:
+          type: string
+      required: [id, method, amount, currency, status]
     ChargeCreateRequest:
       type: object
       properties:
@@ -751,6 +856,29 @@ components:
         reference:
           type: string
       required: [method, amount, currency]
+    RefundCreateRequest:
+      type: object
+      properties:
+        method:
+          type: string
+        amount:
+          type: integer
+        currency:
+          type: string
+        exchange_rate:
+          type: number
+        reference:
+          type: string
+        reason:
+          type: string
+        payment_id:
+          type: integer
+      required: [method, amount, currency]
+    RefundApproveRequest:
+      type: object
+      properties:
+        reference:
+          type: string
     Folio:
       type: object
       properties:
@@ -772,6 +900,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Payment'
+        refunds:
+          type: array
+          items:
+            $ref: '#/components/schemas/Refund'
       required: [id, reservation_id, currency, total, balance]
     FolioStatement:
       type: object

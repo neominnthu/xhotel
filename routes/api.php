@@ -3,23 +3,22 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AvailabilityController;
 use App\Http\Controllers\Api\AvailabilityHoldController;
-use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\CancellationPolicyController;
-use App\Http\Controllers\Api\FrontDeskController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\FolioController;
+use App\Http\Controllers\Api\FrontDeskController;
 use App\Http\Controllers\Api\GuestController;
-use App\Http\Controllers\Api\HousekeepingTaskController;
 use App\Http\Controllers\Api\HousekeepingPerformanceController;
+use App\Http\Controllers\Api\HousekeepingTaskController;
+use App\Http\Controllers\Api\RefundController;
 use App\Http\Controllers\Api\ReportsController;
-use App\Http\Controllers\Api\ReservationImportController;
 use App\Http\Controllers\Api\ReservationController;
+use App\Http\Controllers\Api\ReservationImportController;
 use App\Http\Controllers\Api\RoomStatusLogController;
 use App\Http\Controllers\Api\StayController;
 use App\Http\Controllers\Api\SystemBackupController;
 use App\Http\Controllers\Api\SystemReportController;
 use App\Http\Controllers\Api\SystemUpdateController;
-use App\Http\Middleware\ApiRateLimit;
-use App\Http\Middleware\ApiResponseCache;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -58,6 +57,8 @@ Route::prefix('v1')->group(function () {
         Route::get('folios/{folio}', [FolioController::class, 'show']);
         Route::post('folios/{folio}/charges', [FolioController::class, 'storeCharge']);
         Route::post('folios/{folio}/payments', [FolioController::class, 'storePayment']);
+        Route::post('folios/{folio}/refunds', [FolioController::class, 'storeRefund']);
+        Route::post('refunds/{refund}/approve', [RefundController::class, 'approve']);
 
         Route::get('rooms/{room}/housekeeping-history', [RoomStatusLogController::class, 'index']);
 
@@ -78,6 +79,7 @@ Route::prefix('v1')->group(function () {
             Route::get('dashboard', [FrontDeskController::class, 'dashboard']);
             Route::post('reservations/{reservation}/check-in', [FrontDeskController::class, 'checkIn']);
             Route::post('stays/{stay}/check-out', [FrontDeskController::class, 'checkOut']);
+            Route::post('stays/{stay}/extend', [FrontDeskController::class, 'extendStay']);
             Route::get('guests/search', [FrontDeskController::class, 'searchGuests']);
             Route::get('guests/{guest}', [FrontDeskController::class, 'getGuest']);
             Route::post('stays/{stay}/assign-room', [FrontDeskController::class, 'assignRoom']);

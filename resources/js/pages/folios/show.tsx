@@ -1,4 +1,4 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -53,11 +53,26 @@ type Payment = {
     received_at?: string | null;
 };
 
+type Refund = {
+    id: number;
+    method: string;
+    amount: number;
+    currency: string;
+    status: string;
+    reference?: string | null;
+    reason?: string | null;
+    approved_at?: string | null;
+    refunded_at?: string | null;
+    requested_by: { id: number; name: string } | null;
+    approved_by: { id: number; name: string } | null;
+};
+
 type Props = {
     folio: Folio;
     reservation: Reservation;
     charges: Charge[];
     payments: Payment[];
+    refunds: Refund[];
 };
 
 const breadcrumbs = (reservation: Reservation, folio: Folio): BreadcrumbItem[] => [
@@ -121,7 +136,20 @@ function formatPaymentDetails(payment: Payment): string {
     return details.length > 0 ? details.join(' · ') : '—';
 }
 
-export default function FolioShow({ folio, reservation, charges, payments }: Props) {
+function statusVariant(status: string): 'default' | 'secondary' | 'outline' | 'destructive' {
+    if (status === 'closed' || status === 'approved') {
+        return 'secondary';
+    }
+
+    if (status === 'rejected') {
+        return 'destructive';
+    }
+
+    return 'outline';
+}
+
+export default function FolioShow({ folio, reservation, charges, payments, refunds }: Props) {
+    const { auth } = usePage().props as { auth: { user?: { role?: string } } };
     const chargeForm = useForm({
         type: '',
         description: '',
@@ -136,7 +164,20 @@ export default function FolioShow({ folio, reservation, charges, payments }: Pro
         exchange_rate: '',
         reference: '',
     });
+    const refundForm = useForm({
+        method: 'cash',
+        amount: '',
+        currency: folio.currency,
+        exchange_rate: '',
+        reference: '',
+        reason: '',
+    });
+    const approveForm = useForm({
+        reference: '',
+    });
     const isFolioOpen = folio.status === 'open';
+    const canRequestRefund = folio.balance === 0;
+    const canApproveRefund = ['admin', 'cashier'].includes(auth?.user?.role ?? '');
 
     const handleChargeSubmit = () => {
         chargeForm.post(`/folios/${folio.id}/charges`);
@@ -144,6 +185,14 @@ export default function FolioShow({ folio, reservation, charges, payments }: Pro
 
     const handlePaymentSubmit = () => {
         paymentForm.post(`/folios/${folio.id}/payments`);
+    };
+
+    const handleRefundSubmit = () => {
+        refundForm.post(`/folios/${folio.id}/refunds`);
+    };
+
+    const handleApproveRefund = (refundId: number) => {
+        approveForm.post(`/refunds/${refundId}/approve`);
     };
 
     return (
@@ -510,6 +559,123 @@ export default function FolioShow({ folio, reservation, charges, payments }: Pro
                     </div>
                 </div>
 
+                <div className="rounded-xl border border-border bg-card p-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                            <h2 className="text-sm font-semibold text-foreground">
+                                Request Refund
+                            </h2>
+                            <p className="text-xs text-muted-foreground">
+                                Record approved refunds to return guest payments.
+                            </p>
+                        </div>
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            disabled={!canRequestRefund || refundForm.processing}
+                            onClick={handleRefundSubmit}
+                        >
+                            Add Refund
+                        </Button>
+                    </div>
+                    <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                        <div className="space-y-2">
+                            <Select
+                                value={refundForm.data.method}
+                                onValueChange={(value) =>
+                                    refundForm.setData('method', value)
+                                }
+                                disabled={!canRequestRefund}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Refund method" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="cash">Cash</SelectItem>
+                                    <SelectItem value="card">Credit/Debit Card</SelectItem>
+                                    <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
+                                    <SelectItem value="digital_wallet">Digital Wallet</SelectItem>
+                                    <SelectItem value="check">Check</SelectItem>
+                                    <SelectItem value="voucher">Voucher/Coupon</SelectItem>
+                                    <SelectItem value="other">Other</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <InputError message={refundForm.errors.method} />
+                        </div>
+                        <div className="space-y-2">
+                            <Input
+                                type="number"
+                                min={0}
+                                placeholder="Amount"
+                                value={refundForm.data.amount}
+                                onChange={(event) =>
+                                    refundForm.setData('amount', event.target.value)
+                                }
+                                disabled={!canRequestRefund}
+                            />
+                            <InputError message={refundForm.errors.amount} />
+                        </div>
+                        <div className="space-y-2">
+                            <Input
+                                placeholder="Currency"
+                                value={refundForm.data.currency}
+                                onChange={(event) =>
+                                    refundForm.setData(
+                                        'currency',
+                                        event.target.value.toUpperCase(),
+                                    )
+                                }
+                                disabled={!canRequestRefund}
+                            />
+                            <InputError message={refundForm.errors.currency} />
+                        </div>
+                        <div className="space-y-2">
+                            <Input
+                                type="number"
+                                min={0}
+                                step="0.000001"
+                                placeholder="Exchange rate"
+                                value={refundForm.data.exchange_rate}
+                                onChange={(event) =>
+                                    refundForm.setData(
+                                        'exchange_rate',
+                                        event.target.value,
+                                    )
+                                }
+                                disabled={!canRequestRefund}
+                            />
+                            <InputError message={refundForm.errors.exchange_rate} />
+                        </div>
+                        <div className="space-y-2 sm:col-span-2">
+                            <Input
+                                placeholder="Reference/Transaction ID"
+                                value={refundForm.data.reference}
+                                onChange={(event) =>
+                                    refundForm.setData('reference', event.target.value)
+                                }
+                                disabled={!canRequestRefund}
+                            />
+                            <InputError message={refundForm.errors.reference} />
+                        </div>
+                        <div className="space-y-2 sm:col-span-2">
+                            <Input
+                                placeholder="Reason"
+                                value={refundForm.data.reason}
+                                onChange={(event) =>
+                                    refundForm.setData('reason', event.target.value)
+                                }
+                                disabled={!canRequestRefund}
+                            />
+                            <InputError message={refundForm.errors.reason} />
+                        </div>
+                    </div>
+                    {!canRequestRefund && (
+                        <p className="mt-3 text-xs text-muted-foreground">
+                            Refunds can only be requested when the folio balance is zero.
+                        </p>
+                    )}
+                </div>
+
                 <div className="grid gap-6 lg:grid-cols-2">
                     <div className="rounded-xl border border-border bg-card">
                         <div className="border-b border-border px-4 py-3">
@@ -629,6 +795,104 @@ export default function FolioShow({ folio, reservation, charges, payments }: Pro
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+                </div>
+
+                <div className="rounded-xl border border-border bg-card">
+                    <div className="border-b border-border px-4 py-3">
+                        <h2 className="text-sm font-semibold text-foreground">
+                            Refunds
+                        </h2>
+                    </div>
+                    <div className="w-full overflow-x-auto">
+                        <table className="w-full text-sm">
+                            <thead className="bg-muted/50 text-xs uppercase text-muted-foreground">
+                                <tr>
+                                    <th className="px-4 py-3 text-left font-medium">
+                                        Status
+                                    </th>
+                                    <th className="px-4 py-3 text-left font-medium">
+                                        Method
+                                    </th>
+                                    <th className="px-4 py-3 text-left font-medium">
+                                        Reason
+                                    </th>
+                                    <th className="px-4 py-3 text-left font-medium">
+                                        Requested By
+                                    </th>
+                                    <th className="px-4 py-3 text-left font-medium">
+                                        Approved By
+                                    </th>
+                                    <th className="px-4 py-3 text-right font-medium">
+                                        Amount
+                                    </th>
+                                    <th className="px-4 py-3 text-right font-medium">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-border">
+                                {refunds.length === 0 ? (
+                                    <tr>
+                                        <td
+                                            className="px-4 py-6 text-center text-muted-foreground"
+                                            colSpan={7}
+                                        >
+                                            No refunds recorded.
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    refunds.map((refund) => (
+                                        <tr key={refund.id}>
+                                            <td className="px-4 py-3">
+                                                <Badge variant={statusVariant(refund.status)}>
+                                                    {refund.status}
+                                                </Badge>
+                                            </td>
+                                            <td className="px-4 py-3 text-foreground">
+                                                {formatPaymentMethod(refund.method)}
+                                            </td>
+                                            <td className="px-4 py-3 text-muted-foreground">
+                                                {refund.reason ?? '—'}
+                                            </td>
+                                            <td className="px-4 py-3 text-muted-foreground">
+                                                {refund.requested_by?.name ?? '—'}
+                                            </td>
+                                            <td className="px-4 py-3 text-muted-foreground">
+                                                {refund.approved_by?.name ?? '—'}
+                                            </td>
+                                            <td className="px-4 py-3 text-right text-foreground">
+                                                {refund.amount} {refund.currency}
+                                            </td>
+                                            <td className="px-4 py-3 text-right">
+                                                <div className="flex items-center justify-end gap-2">
+                                                    {refund.status === 'approved' && (
+                                                        <Button asChild variant="ghost" size="sm">
+                                                            <Link
+                                                                href={`/refunds/${refund.id}/receipt`}
+                                                                target="_blank"
+                                                            >
+                                                                Receipt
+                                                            </Link>
+                                                        </Button>
+                                                    )}
+                                                    {refund.status === 'pending' && canApproveRefund && (
+                                                        <Button
+                                                            type="button"
+                                                            size="sm"
+                                                            disabled={approveForm.processing}
+                                                            onClick={() => handleApproveRefund(refund.id)}
+                                                        >
+                                                            Approve
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 

@@ -61,12 +61,18 @@ All errors use JSON with a top-level message and optional errors map.
 - FOLIO_CLOSED (409)
 - FOLIO_BALANCE_MISMATCH (409)
 - FOLIO_CURRENCY_MISMATCH (409)
+- FOLIO_REFUND_EXCEEDS_PAID (409)
+- FOLIO_REFUND_PAYMENT_MISMATCH (409)
 
 ### Payments
 
 - PAYMENT_METHOD_INVALID (422)
 - PAYMENT_GATEWAY_FAILED (502)
 - PAYMENT_REFERENCE_DUPLICATE (409)
+
+### Refunds
+
+- REFUND_STATUS_INVALID (409)
 
 ### Housekeeping
 
@@ -110,6 +116,7 @@ All errors use JSON with a top-level message and optional errors map.
 ### Reservation Update
 
 - If status is checked_out, return 409 RESERVATION_STATUS_INVALID.
+- If status is checked_in and date/room changes are attempted, return 409 RESERVATION_STATUS_INVALID.
 - If moving room causes overlap, return 409 RESERVATION_ROOM_UNAVAILABLE.
 
 ### Check-in
@@ -126,6 +133,13 @@ All errors use JSON with a top-level message and optional errors map.
 
 - If folio is closed, return 409 FOLIO_CLOSED.
 - If currency does not match folio currency and exchange rate missing, return 409 FOLIO_CURRENCY_MISMATCH.
+
+### Refunds
+
+- If folio balance is not zero, return 409 FOLIO_BALANCE_MISMATCH.
+- If refund exceeds paid total, return 409 FOLIO_REFUND_EXCEEDS_PAID.
+- If refund payment does not match folio, return 409 FOLIO_REFUND_PAYMENT_MISMATCH.
+- If refund is not pending, return 409 REFUND_STATUS_INVALID.
 
 ### ABAC
 

@@ -53,6 +53,8 @@
 ### Billing Rules
 
 - All charges are posted to a folio with tax breakdown
+- Service charge can be applied to accommodation charges before tax
+- Totals may be rounded based on configured rounding rules
 - Payments can be split across methods and currencies
 - Refunds require supervisor approval (ABAC)
 

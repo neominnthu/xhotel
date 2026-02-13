@@ -9,8 +9,8 @@ use App\Models\HousekeepingTask;
 use App\Models\Room;
 use App\Models\RoomStatusLog;
 use App\Services\AuditLogService;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -53,10 +53,26 @@ class HousekeepingPageController extends Controller
 
         $task->fill($request->validated());
 
-        if ($task->status === 'completed' && ! $task->completed_at) {
-            $task->completed_at = now();
-        } elseif ($task->status !== 'completed') {
+        if ($task->status === 'in_progress' && ! $task->started_at) {
+            $task->started_at = now();
+        }
+
+        if ($task->status === 'completed') {
+            $task->started_at ??= now();
+            $task->completed_at ??= now();
+            $task->completed_by ??= $request->user()?->id;
+
+            if ($task->started_at && $task->completed_at) {
+                $task->actual_duration_minutes = $task->started_at->diffInMinutes($task->completed_at);
+            }
+        } else {
             $task->completed_at = null;
+            $task->completed_by = null;
+            $task->actual_duration_minutes = null;
+
+            if ($task->status === 'open') {
+                $task->started_at = null;
+            }
         }
 
         $task->save();

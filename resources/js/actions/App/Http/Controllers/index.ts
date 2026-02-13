@@ -7,6 +7,7 @@ import ReportsPageController from './ReportsPageController'
 import Settings from './Settings'
 import Folios from './Folios'
 import InvoiceController from './InvoiceController'
+import RefundReceiptController from './RefundReceiptController'
 import BillingReportsController from './BillingReportsController'
 import Housekeeping from './Housekeeping'
 import Admin from './Admin'
@@ -20,6 +21,7 @@ ReportsPageController: Object.assign(ReportsPageController, ReportsPageControlle
 Settings: Object.assign(Settings, Settings),
 Folios: Object.assign(Folios, Folios),
 InvoiceController: Object.assign(InvoiceController, InvoiceController),
+RefundReceiptController: Object.assign(RefundReceiptController, RefundReceiptController),
 BillingReportsController: Object.assign(BillingReportsController, BillingReportsController),
 Housekeeping: Object.assign(Housekeeping, Housekeeping),
 Admin: Object.assign(Admin, Admin),

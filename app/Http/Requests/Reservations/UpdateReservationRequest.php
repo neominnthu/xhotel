@@ -21,4 +21,19 @@ class UpdateReservationRequest extends FormRequest
             'room_id' => ['nullable', 'integer', 'exists:rooms,id'],
         ];
     }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $reservation = $this->route('reservation');
+            $checkIn = $this->input('check_in') ?? $reservation?->check_in?->toDateString();
+            $checkOut = $this->input('check_out');
+
+            if ($checkIn && $checkOut && \Carbon\Carbon::parse($checkOut)->lte(
+                \Carbon\Carbon::parse($checkIn)
+            )) {
+                $validator->errors()->add('check_out', 'Check-out must be after check-in.');
+            }
+        });
+    }
 }

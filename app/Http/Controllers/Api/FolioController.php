@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Folios\StoreFolioChargeRequest;
 use App\Http\Requests\Folios\StoreFolioPaymentRequest;
+use App\Http\Requests\Folios\StoreFolioRefundRequest;
 use App\Models\Folio;
 use App\Services\FolioService;
+use App\Services\RefundService;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 
@@ -17,7 +19,7 @@ class FolioController extends Controller
         $this->guardFolioHasReservation($folio);
         $this->authorize('view', $folio->reservation);
 
-        $folio->load(['charges', 'payments']);
+        $folio->load(['charges', 'payments', 'refunds']);
 
         return response()->json([
             'id' => $folio->id,
@@ -40,6 +42,18 @@ class FolioController extends Controller
                 'amount' => $payment->amount,
                 'currency' => $payment->currency,
                 'received_at' => $payment->received_at?->toDateTimeString(),
+            ])->values(),
+            'refunds' => $folio->refunds->map(fn ($refund) => [
+                'id' => $refund->id,
+                'method' => $refund->method,
+                'amount' => $refund->amount,
+                'currency' => $refund->currency,
+                'status' => $refund->status,
+                'reference' => $refund->reference,
+                'reason' => $refund->reason,
+                'requested_at' => $refund->created_at?->toDateTimeString(),
+                'approved_at' => $refund->approved_at?->toDateTimeString(),
+                'refunded_at' => $refund->refunded_at?->toDateTimeString(),
             ])->values(),
         ]);
     }
@@ -77,6 +91,25 @@ class FolioController extends Controller
             'method' => $payment->method,
             'amount' => $payment->amount,
             'currency' => $payment->currency,
+        ]);
+    }
+
+    public function storeRefund(
+        StoreFolioRefundRequest $request,
+        Folio $folio,
+        RefundService $service
+    ): JsonResponse {
+        $this->guardFolioHasReservation($folio);
+        $this->authorize('addRefund', $folio);
+
+        $refund = $service->requestRefund($folio, $request->validated(), $request->user());
+
+        return response()->json([
+            'id' => $refund->id,
+            'method' => $refund->method,
+            'amount' => $refund->amount,
+            'currency' => $refund->currency,
+            'status' => $refund->status,
         ]);
     }
 

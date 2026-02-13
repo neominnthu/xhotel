@@ -32,5 +32,5 @@
 
 - Store monetary values as integer cents where possible
 - If currency has no minor unit, use integer units
-- Round display values using standard bankers rounding
+- Round totals using configured unit and method from config/billing.php
 

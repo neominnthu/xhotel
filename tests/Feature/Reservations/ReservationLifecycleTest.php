@@ -186,11 +186,90 @@ class ReservationLifecycleTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)->patchJson("/api/v1/reservations/{$reservation->id}/cancel", [
-            'reason' => 'Guest requested cancellation'
+            'reason' => 'Guest requested cancellation',
         ]);
 
         $response->assertOk();
         $reservation->refresh();
         $this->assertEquals('canceled', $reservation->status);
+    }
+
+    public function test_reservation_update_rejects_room_overlap(): void
+    {
+        $property = Property::create([
+            'name' => 'XHotel Yangon',
+            'timezone' => 'Asia/Yangon',
+            'default_currency' => 'MMK',
+            'default_language' => 'my',
+        ]);
+
+        $roomType = RoomType::create([
+            'name' => 'Deluxe Room',
+            'property_id' => $property->id,
+            'capacity' => 2,
+            'base_rate' => 150000,
+        ]);
+
+        $roomOne = Room::create([
+            'number' => '101',
+            'room_type_id' => $roomType->id,
+            'property_id' => $property->id,
+            'floor' => 1,
+            'is_active' => true,
+            'status' => 'available',
+        ]);
+
+        $roomTwo = Room::create([
+            'number' => '102',
+            'room_type_id' => $roomType->id,
+            'property_id' => $property->id,
+            'floor' => 1,
+            'is_active' => true,
+            'status' => 'available',
+        ]);
+
+        $guest = Guest::create([
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+        ]);
+
+        $user = User::factory()->create([
+            'role' => 'front_desk',
+            'property_id' => $property->id,
+        ]);
+
+        $reservationOne = Reservation::create([
+            'property_id' => $property->id,
+            'guest_id' => $guest->id,
+            'code' => 'RSV-101',
+            'check_in' => now()->addDays(1)->toDateString(),
+            'check_out' => now()->addDays(3)->toDateString(),
+            'room_type_id' => $roomType->id,
+            'room_id' => $roomOne->id,
+            'adults' => 1,
+            'status' => 'confirmed',
+            'source' => 'walk_in',
+        ]);
+
+        $reservationTwo = Reservation::create([
+            'property_id' => $property->id,
+            'guest_id' => $guest->id,
+            'code' => 'RSV-102',
+            'check_in' => now()->addDays(1)->toDateString(),
+            'check_out' => now()->addDays(3)->toDateString(),
+            'room_type_id' => $roomType->id,
+            'room_id' => $roomTwo->id,
+            'adults' => 1,
+            'status' => 'confirmed',
+            'source' => 'walk_in',
+        ]);
+
+        $response = $this->actingAs($user)->patchJson(
+            "/api/v1/reservations/{$reservationTwo->id}",
+            ['room_id' => $roomOne->id]
+        );
+
+        $response->assertStatus(409);
+        $response->assertJsonFragment(['code' => 'RESERVATION_ROOM_UNAVAILABLE']);
     }
 }

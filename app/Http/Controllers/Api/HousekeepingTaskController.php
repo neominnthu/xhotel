@@ -36,7 +36,22 @@ class HousekeepingTaskController extends Controller
             $page,
             $perPage
         ): array {
-            $query = HousekeepingTask::query()->with(['room', 'assignee']);
+            $query = HousekeepingTask::query()
+                ->select([
+                    'id',
+                    'room_id',
+                    'type',
+                    'status',
+                    'priority',
+                    'assigned_to',
+                    'due_at',
+                    'started_at',
+                    'completed_at',
+                ])
+                ->with([
+                    'room:id,number,housekeeping_status',
+                    'assignee:id,name',
+                ]);
 
             $this->applyFilters($query, $filters);
             $this->applySorting($query, $filters);
@@ -157,10 +172,26 @@ class HousekeepingTaskController extends Controller
         $task->fill($updates);
 
         if ($statusProvided) {
-            if ($task->status === 'completed' && ! $task->completed_at) {
-                $task->completed_at = now();
-            } elseif ($task->status !== 'completed') {
+            if ($task->status === 'in_progress' && ! $task->started_at) {
+                $task->started_at = now();
+            }
+
+            if ($task->status === 'completed') {
+                $task->started_at ??= now();
+                $task->completed_at ??= now();
+                $task->completed_by ??= auth()->id();
+
+                if ($task->started_at && $task->completed_at) {
+                    $task->actual_duration_minutes = $task->started_at->diffInMinutes($task->completed_at);
+                }
+            } else {
                 $task->completed_at = null;
+                $task->completed_by = null;
+                $task->actual_duration_minutes = null;
+
+                if ($task->status === 'open') {
+                    $task->started_at = null;
+                }
             }
         }
 
@@ -272,7 +303,9 @@ class HousekeepingTaskController extends Controller
             'priority' => $task->priority,
             'assigned_to' => $task->assigned_to,
             'due_at' => $task->due_at?->toDateTimeString(),
+            'started_at' => $task->started_at?->toDateTimeString(),
             'completed_at' => $task->completed_at?->toDateTimeString(),
+            'sla_status' => $task->getSlaStatus(),
             'room' => $task->room
                 ? [
                     'id' => $task->room->id,

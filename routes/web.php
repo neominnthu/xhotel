@@ -1,28 +1,28 @@
 <?php
 
+use App\Http\Controllers\BillingReportsController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Folios\FolioPageController;
 use App\Http\Controllers\FrontDesk\CheckInPageController;
 use App\Http\Controllers\FrontDesk\CheckOutPageController;
 use App\Http\Controllers\FrontDesk\FrontDeskPageController;
 use App\Http\Controllers\Guests\GuestPageController;
-use App\Http\Controllers\Folios\FolioPageController;
 use App\Http\Controllers\Housekeeping\HousekeepingAuditPageController;
 use App\Http\Controllers\Housekeeping\HousekeepingPageController;
 use App\Http\Controllers\Housekeeping\RoomHistoryPageController;
 use App\Http\Controllers\ReportsPageController;
-use App\Http\Controllers\Reservations\ReservationPageController;
 use App\Http\Controllers\Reservations\ReservationImportPageController;
-use App\Http\Controllers\Settings\CancellationPolicyPageController;
+use App\Http\Controllers\Reservations\ReservationPageController;
 use App\Http\Controllers\Settings\AuditLogPageController;
-use App\Http\Controllers\Settings\UpdatePageController;
+use App\Http\Controllers\Settings\CancellationPolicyPageController;
 use App\Http\Controllers\Settings\RatePageController;
 use App\Http\Controllers\Settings\RoomTypePageController;
-use App\Http\Controllers\BillingReportsController;
+use App\Http\Controllers\Settings\UpdatePageController;
 use App\Models\Folio;
 use App\Models\HousekeepingTask;
 use App\Models\Reservation;
-use App\Models\RoomType;
 use App\Models\Room;
+use App\Models\RoomType;
 use App\Models\User;
 use App\Services\ReservationService;
 use Illuminate\Support\Facades\Gate;
@@ -350,7 +350,13 @@ Route::get('calendar', function () {
 })->middleware(['auth', 'verified'])->name('calendar.index');
 
 Route::get('folios/{folio}', function (Folio $folio) {
-    $folio->load(['reservation.guest', 'charges.createdBy', 'payments']);
+    $folio->load([
+        'reservation.guest',
+        'charges.createdBy',
+        'payments',
+        'refunds.requestedBy',
+        'refunds.approvedBy',
+    ]);
 
     if (! $folio->reservation) {
         abort(404);
@@ -404,6 +410,29 @@ Route::get('folios/{folio}', function (Folio $folio) {
             'check_number' => $payment->check_number,
             'received_at' => $payment->received_at?->toDateTimeString(),
         ]),
+        'refunds' => $folio->refunds->map(fn ($refund) => [
+            'id' => $refund->id,
+            'method' => $refund->method,
+            'amount' => $refund->amount,
+            'currency' => $refund->currency,
+            'status' => $refund->status,
+            'reference' => $refund->reference,
+            'reason' => $refund->reason,
+            'approved_at' => $refund->approved_at?->toDateTimeString(),
+            'refunded_at' => $refund->refunded_at?->toDateTimeString(),
+            'requested_by' => $refund->requestedBy
+                ? [
+                    'id' => $refund->requestedBy->id,
+                    'name' => $refund->requestedBy->name,
+                ]
+                : null,
+            'approved_by' => $refund->approvedBy
+                ? [
+                    'id' => $refund->approvedBy->id,
+                    'name' => $refund->approvedBy->name,
+                ]
+                : null,
+        ]),
     ]);
 })->middleware(['auth', 'verified'])->name('folios.show');
 
@@ -415,11 +444,24 @@ Route::post('folios/{folio}/payments', [FolioPageController::class, 'storePaymen
     ->middleware(['auth', 'verified'])
     ->name('folios.payments.store');
 
+Route::post('folios/{folio}/refunds', [FolioPageController::class, 'storeRefund'])
+    ->middleware(['auth', 'verified'])
+    ->name('folios.refunds.store');
+
+Route::post('refunds/{refund}/approve', [FolioPageController::class, 'approveRefund'])
+    ->middleware(['auth', 'verified'])
+    ->name('refunds.approve');
+
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\RefundReceiptController;
 
 Route::get('invoices/{folio}', [InvoiceController::class, 'show'])
     ->middleware(['auth', 'verified'])
     ->name('invoices.show');
+
+Route::get('refunds/{refund}/receipt', [RefundReceiptController::class, 'show'])
+    ->middleware(['auth', 'verified'])
+    ->name('refunds.receipt');
 
 Route::get('billing-reports', [BillingReportsController::class, 'index'])
     ->middleware(['auth', 'verified'])
@@ -451,7 +493,21 @@ Route::get('housekeeping', function () {
         $assigneesQuery->where('property_id', $user->property_id);
     }
 
-    $query = HousekeepingTask::query()->with(['room', 'assignee']);
+    $query = HousekeepingTask::query()
+        ->select([
+            'id',
+            'room_id',
+            'type',
+            'status',
+            'priority',
+            'assigned_to',
+            'due_at',
+            'completed_at',
+        ])
+        ->with([
+            'room:id,number,housekeeping_status',
+            'assignee:id,name',
+        ]);
 
     $roomsQuery = Room::query()->orderBy('number');
     if ($user?->property_id) {
@@ -559,6 +615,9 @@ Route::get('housekeeping', function () {
             'type' => $task->type,
             'status' => $task->status,
             'priority' => $task->priority,
+            'due_at' => $task->due_at?->toDateTimeString(),
+            'completed_at' => $task->completed_at?->toDateTimeString(),
+            'sla_status' => $task->getSlaStatus(),
             'room' => $task->room
                 ? [
                     'id' => $task->room->id,

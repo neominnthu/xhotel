@@ -8,6 +8,7 @@ import GuestController from './GuestController'
 import CancellationPolicyController from './CancellationPolicyController'
 import StayController from './StayController'
 import FolioController from './FolioController'
+import RefundController from './RefundController'
 import RoomStatusLogController from './RoomStatusLogController'
 import HousekeepingTaskController from './HousekeepingTaskController'
 import HousekeepingPerformanceController from './HousekeepingPerformanceController'
@@ -27,6 +28,7 @@ GuestController: Object.assign(GuestController, GuestController),
 CancellationPolicyController: Object.assign(CancellationPolicyController, CancellationPolicyController),
 StayController: Object.assign(StayController, StayController),
 FolioController: Object.assign(FolioController, FolioController),
+RefundController: Object.assign(RefundController, RefundController),
 RoomStatusLogController: Object.assign(RoomStatusLogController, RoomStatusLogController),
 HousekeepingTaskController: Object.assign(HousekeepingTaskController, HousekeepingTaskController),
 HousekeepingPerformanceController: Object.assign(HousekeepingPerformanceController, HousekeepingPerformanceController),

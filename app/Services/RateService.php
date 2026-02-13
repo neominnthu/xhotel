@@ -2,23 +2,43 @@
 
 namespace App\Services;
 
+use App\Models\Charge;
+use App\Models\Folio;
 use App\Models\Rate;
 use App\Models\Reservation;
-use App\Models\Folio;
-use App\Models\Charge;
 use Carbon\Carbon;
 
 class RateService
 {
     public function calculateRate(Reservation $reservation): array
     {
-        $checkIn = Carbon::parse($reservation->check_in);
-        $checkOut = Carbon::parse($reservation->check_out);
+        return $this->calculateRateForDates(
+            $reservation,
+            $reservation->check_in?->toDateString(),
+            $reservation->check_out?->toDateString()
+        );
+    }
+
+    public function calculateRateForDates(Reservation $reservation, ?string $checkInDate, ?string $checkOutDate): array
+    {
+        if (! $checkInDate || ! $checkOutDate) {
+            return [
+                'rate' => 0,
+                'nights' => 0,
+                'subtotal' => 0,
+                'tax_amount' => 0,
+                'total' => 0,
+                'currency' => 'MMK',
+            ];
+        }
+
+        $checkIn = Carbon::parse($checkInDate);
+        $checkOut = Carbon::parse($checkOutDate);
         $nights = $checkIn->diffInDays($checkOut);
 
         $rates = Rate::active()
             ->forRoomType($reservation->room_type_id)
-            ->forDateRange($reservation->check_in, $reservation->check_out)
+            ->forDateRange($checkInDate, $checkOutDate)
             ->orderByRaw("CASE type WHEN 'special' THEN 1 WHEN 'seasonal' THEN 2 WHEN 'base' THEN 3 END")
             ->get();
 
@@ -33,17 +53,30 @@ class RateService
         $rateAmount = $rate ? $this->applyAdjustment($rate, $baseRate) : $baseRate;
 
         $subtotal = $rateAmount * $nights;
-        $taxRate = 0.05; // 5% tax
-        $taxAmount = (int) round($subtotal * $taxRate);
-        $total = $subtotal + $taxAmount;
+        $serviceChargeRate = (float) config('billing.service_charge_rate', 0.0);
+        $taxRate = (float) config('billing.tax_rate', 0.0);
+        $serviceChargeAmount = (int) round($subtotal * $serviceChargeRate);
+        $taxableAmount = $subtotal + $serviceChargeAmount;
+        $taxAmount = (int) round($taxableAmount * $taxRate);
+        $total = $subtotal + $serviceChargeAmount + $taxAmount;
+        $roundedTotal = $this->roundTotal($total);
+
+        if ($roundedTotal !== $total) {
+            $taxAmount += $roundedTotal - $total;
+            $total = $roundedTotal;
+        }
 
         return [
             'rate' => $rateAmount,
             'nights' => $nights,
             'subtotal' => $subtotal,
+            'service_charge_amount' => $serviceChargeAmount,
+            'charge_amount' => $subtotal + $serviceChargeAmount,
             'tax_amount' => $taxAmount,
             'total' => $total,
             'currency' => 'MMK',
+            'tax_rate' => $taxRate,
+            'service_charge_rate' => $serviceChargeRate,
         ];
     }
 
@@ -95,7 +128,7 @@ class RateService
         Charge::create([
             'folio_id' => $folio->id,
             'type' => 'accommodation',
-            'amount' => $calculation['subtotal'],
+            'amount' => $calculation['charge_amount'],
             'currency' => $calculation['currency'],
             'tax_amount' => $calculation['tax_amount'],
             'description' => "Room charge for {$calculation['nights']} nights",
@@ -105,5 +138,23 @@ class RateService
 
         $folio->increment('total', $calculation['total']);
         $folio->increment('balance', $calculation['total']);
+    }
+
+    private function roundTotal(int $total): int
+    {
+        $unit = (int) config('billing.rounding_unit', 1);
+        $method = (string) config('billing.rounding_method', 'nearest');
+
+        if ($unit <= 1) {
+            return $total;
+        }
+
+        $factor = $total / $unit;
+
+        return match ($method) {
+            'up' => (int) ceil($factor) * $unit,
+            'down' => (int) floor($factor) * $unit,
+            default => (int) round($factor) * $unit,
+        };
     }
 }

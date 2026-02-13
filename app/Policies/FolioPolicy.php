@@ -72,6 +72,15 @@ class FolioPolicy
         return $this->hasRole($user, ['admin', 'reservation_manager', 'front_desk', 'cashier']);
     }
 
+    public function addRefund(User $user, Folio $folio): bool
+    {
+        if (! $this->scopeProperty($user, $folio)) {
+            return false;
+        }
+
+        return $this->hasRole($user, ['admin', 'reservation_manager', 'front_desk', 'cashier']);
+    }
+
     private function hasRole(User $user, array $roles): bool
     {
         $role = $user->role ?? null;

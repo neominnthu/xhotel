@@ -21,6 +21,9 @@ type TaskRow = {
     type: string;
     status: string;
     priority: string;
+    due_at?: string | null;
+    completed_at?: string | null;
+    sla_status?: string | null;
     room: { id: number; number: string; room_status: string } | null;
     assignee: { id: number; name: string } | null;
 };
@@ -122,6 +125,34 @@ function statusVariant(status: string) {
         default:
             return 'outline';
     }
+}
+
+function slaVariant(status?: string | null) {
+    switch (status) {
+        case 'overdue':
+            return 'destructive';
+        case 'due_soon':
+            return 'secondary';
+        case 'urgent':
+            return 'default';
+        case 'completed':
+            return 'outline';
+        default:
+            return 'outline';
+    }
+}
+
+function formatDateTime(value?: string | null) {
+    if (!value) {
+        return '—';
+    }
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+        return value;
+    }
+
+    return date.toLocaleString();
 }
 
 export default function HousekeepingIndex({
@@ -1392,6 +1423,12 @@ export default function HousekeepingIndex({
                                         Priority
                                     </th>
                                     <th className="px-4 py-3 text-left font-medium">
+                                        Due
+                                    </th>
+                                    <th className="px-4 py-3 text-left font-medium">
+                                        SLA
+                                    </th>
+                                    <th className="px-4 py-3 text-left font-medium">
                                         Status
                                     </th>
                                     <th className="px-4 py-3 text-right font-medium">
@@ -1405,6 +1442,12 @@ export default function HousekeepingIndex({
                                         <tr key={`skeleton-${index}`}>
                                             <td className="px-4 py-3">
                                                 <div className="h-4 w-4 rounded bg-muted/70 motion-safe:animate-pulse" />
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <div className="h-4 w-16 rounded bg-muted/70 motion-safe:animate-pulse" />
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <div className="h-4 w-24 rounded bg-muted/70 motion-safe:animate-pulse" />
                                             </td>
                                             <td className="px-4 py-3">
                                                 <div className="h-4 w-16 rounded bg-muted/70 motion-safe:animate-pulse" />
@@ -1430,14 +1473,23 @@ export default function HousekeepingIndex({
                                     <tr>
                                         <td
                                             className="px-4 py-8 text-center text-muted-foreground"
-                                            colSpan={7}
+                                            colSpan={9}
                                         >
                                             No tasks found.
                                         </td>
                                     </tr>
                                 ) : (
                                     taskRows.map((task) => (
-                                        <tr key={task.id}>
+                                        <tr
+                                            key={task.id}
+                                            className={
+                                                task.sla_status === 'overdue'
+                                                    ? 'bg-destructive/5'
+                                                    : task.sla_status === 'urgent'
+                                                      ? 'bg-amber-500/10'
+                                                      : undefined
+                                            }
+                                        >
                                             <td className="px-4 py-3">
                                                 <Checkbox
                                                     checked={selectedTaskIds.includes(task.id)}
@@ -1479,6 +1531,14 @@ export default function HousekeepingIndex({
                                             </td>
                                             <td className="px-4 py-3 text-muted-foreground">
                                                 {task.priority}
+                                            </td>
+                                            <td className="px-4 py-3 text-muted-foreground">
+                                                {formatDateTime(task.due_at)}
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <Badge variant={slaVariant(task.sla_status)}>
+                                                    {(task.sla_status ?? 'normal').replace('_', ' ')}
+                                                </Badge>
                                             </td>
                                             <td className="px-4 py-3">
                                                 <Badge

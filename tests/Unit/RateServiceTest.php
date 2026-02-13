@@ -90,4 +90,33 @@ class RateServiceTest extends TestCase
 
         $this->assertEquals(150000, $result['rate']);
     }
+
+    public function test_applies_service_charge_tax_and_rounding(): void
+    {
+        config()->set('billing.tax_rate', 0.05);
+        config()->set('billing.service_charge_rate', 0.1);
+        config()->set('billing.rounding_unit', 1000);
+        config()->set('billing.rounding_method', 'up');
+
+        $property = Property::factory()->create();
+        $roomType = RoomType::factory()->create([
+            'property_id' => $property->id,
+            'base_rate' => 10000,
+        ]);
+
+        $reservation = Reservation::factory()->create([
+            'property_id' => $property->id,
+            'room_type_id' => $roomType->id,
+            'check_in' => now()->toDateString(),
+            'check_out' => now()->addDay()->toDateString(),
+        ]);
+
+        $service = app(RateService::class);
+        $result = $service->calculateRate($reservation);
+
+        $this->assertEquals(1000, $result['service_charge_amount']);
+        $this->assertEquals(11000, $result['charge_amount']);
+        $this->assertEquals(1000, $result['tax_amount']);
+        $this->assertEquals(12000, $result['total']);
+    }
 }

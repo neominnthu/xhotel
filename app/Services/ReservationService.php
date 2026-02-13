@@ -23,9 +23,7 @@ class ReservationService
         public AuditLogService $auditLogService,
         public RateService $rateService,
         public FolioService $folioService
-    )
-    {
-    }
+    ) {}
 
     public function create(array $data, $actor = null): Reservation
     {
@@ -96,7 +94,41 @@ class ReservationService
 
     public function update(Reservation $reservation, array $data, $actor = null): Reservation
     {
+        if (in_array($reservation->status, ['checked_out', 'canceled'], true)) {
+            throw new HttpResponseException(response()->json([
+                'code' => 'RESERVATION_STATUS_INVALID',
+                'message' => 'Reservation status does not allow updates.',
+            ], 409));
+        }
+
+        if ($reservation->status === 'checked_in'
+            && (array_key_exists('check_in', $data)
+                || array_key_exists('check_out', $data)
+                || array_key_exists('room_id', $data))) {
+            throw new HttpResponseException(response()->json([
+                'code' => 'RESERVATION_STATUS_INVALID',
+                'message' => 'Checked-in reservations must be updated through front desk actions.',
+            ], 409));
+        }
+
         $oldData = $reservation->only(['check_in', 'check_out', 'adults', 'children', 'room_id']);
+        $oldCheckIn = $reservation->check_in?->toDateString();
+        $oldCheckOut = $reservation->check_out?->toDateString();
+        $newCheckIn = $data['check_in'] ?? $oldCheckIn;
+        $newCheckOut = $data['check_out'] ?? $oldCheckOut;
+
+        if ($newCheckIn && $newCheckOut) {
+            $this->assertAvailability($reservation->property_id, [
+                'room_type_id' => $reservation->room_type_id,
+                'check_in' => $newCheckIn,
+                'check_out' => $newCheckOut,
+                'room_id' => $data['room_id'] ?? $reservation->room_id,
+            ], $reservation->id);
+        }
+
+        if ($oldCheckOut && $newCheckOut && $newCheckOut !== $oldCheckOut) {
+            $this->applyAccommodationAdjustment($reservation, $oldCheckOut, $newCheckOut, $actor);
+        }
 
         $reservation->fill($data);
         $reservation->save();
@@ -145,6 +177,45 @@ class ReservationService
         return $reservation->load(['guest', 'roomType', 'room']);
     }
 
+    public function extendReservation(Reservation $reservation, string $newCheckOut, $actor = null): Reservation
+    {
+        if ($reservation->status !== 'checked_in') {
+            throw new HttpResponseException(response()->json([
+                'code' => 'RESERVATION_STATUS_INVALID',
+                'message' => 'Reservation status does not allow extension.',
+            ], 409));
+        }
+
+        $oldCheckOut = $reservation->check_out?->toDateString();
+
+        if (! $oldCheckOut || ! $reservation->check_in) {
+            throw new HttpResponseException(response()->json([
+                'code' => 'RESERVATION_DATE_CONFLICT',
+                'message' => 'Reservation dates are not set for extension.',
+            ], 409));
+        }
+
+        $this->assertRoomExtensionAvailability($reservation, $newCheckOut);
+
+        return DB::transaction(function () use ($reservation, $newCheckOut, $oldCheckOut, $actor) {
+            $this->applyAccommodationAdjustment($reservation, $oldCheckOut, $newCheckOut, $actor);
+
+            $reservation->update([
+                'check_out' => $newCheckOut,
+            ]);
+
+            if ($actor) {
+                $this->auditLogService->record($actor, 'reservation.extended', 'reservation', [
+                    'reservation_id' => $reservation->id,
+                    'from_check_out' => $oldCheckOut,
+                    'to_check_out' => $newCheckOut,
+                ]);
+            }
+
+            return $reservation->fresh(['guest', 'roomType', 'room']);
+        });
+    }
+
     public function cancellationPreview(Reservation $reservation): array
     {
         $policy = $this->resolveCancellationPolicy($reservation);
@@ -186,7 +257,7 @@ class ReservationService
         return 'RSV-'.now()->format('Ymd').'-'.Str::upper(Str::random(4));
     }
 
-    private function assertAvailability(int $propertyId, array $data): void
+    private function assertAvailability(int $propertyId, array $data, ?int $ignoreReservationId = null): void
     {
         $roomTypeId = (int) $data['room_type_id'];
         $checkIn = $data['check_in'];
@@ -211,8 +282,25 @@ class ReservationService
 
             if (! $room) {
                 throw new HttpResponseException(response()->json([
-                    'code' => 'ROOM_NOT_AVAILABLE',
+                    'code' => 'RESERVATION_ROOM_UNAVAILABLE',
                     'message' => 'Selected room is not available.',
+                ], 409));
+            }
+
+            $roomOverlap = Reservation::query()
+                ->where('room_id', $room->id)
+                ->whereIn('status', ['confirmed', 'checked_in'])
+                ->when($ignoreReservationId, fn ($query) => $query->where('id', '!=', $ignoreReservationId))
+                ->where(function ($query) use ($checkIn, $checkOut) {
+                    $query->where('check_in', '<', $checkOut)
+                        ->where('check_out', '>', $checkIn);
+                })
+                ->exists();
+
+            if ($roomOverlap) {
+                throw new HttpResponseException(response()->json([
+                    'code' => 'RESERVATION_ROOM_UNAVAILABLE',
+                    'message' => 'Selected room is already assigned for these dates.',
                 ], 409));
             }
         }
@@ -227,6 +315,7 @@ class ReservationService
             ->where('room_type_id', $roomTypeId)
             ->where('property_id', $propertyId)
             ->whereIn('status', ['confirmed', 'checked_in'])
+            ->when($ignoreReservationId, fn ($query) => $query->where('id', '!=', $ignoreReservationId))
             ->where(function ($query) use ($checkIn, $checkOut) {
                 $query->where('check_in', '<', $checkOut)
                     ->where('check_out', '>', $checkIn);
@@ -258,8 +347,84 @@ class ReservationService
 
         if ($availableCount < 1) {
             throw new HttpResponseException(response()->json([
-                'code' => 'AVAILABILITY_UNAVAILABLE',
+                'code' => 'RESERVATION_ROOM_UNAVAILABLE',
                 'message' => 'No availability for the selected dates.',
+            ], 409));
+        }
+    }
+
+    private function applyAccommodationAdjustment(
+        Reservation $reservation,
+        string $oldCheckOut,
+        string $newCheckOut,
+        $actor
+    ): void {
+        if (! $reservation->check_in) {
+            return;
+        }
+
+        if (Carbon::parse($newCheckOut)->lessThanOrEqualTo(Carbon::parse($oldCheckOut))) {
+            throw new HttpResponseException(response()->json([
+                'code' => 'RESERVATION_DATE_CONFLICT',
+                'message' => 'Check-out must be later than the current check-out date.',
+            ], 409));
+        }
+
+        $folio = $reservation->folios()->first();
+
+        if (! $folio || ! $actor) {
+            return;
+        }
+
+        $oldCalculation = $this->rateService->calculateRateForDates(
+            $reservation,
+            $reservation->check_in->toDateString(),
+            $oldCheckOut
+        );
+        $newCalculation = $this->rateService->calculateRateForDates(
+            $reservation,
+            $reservation->check_in->toDateString(),
+            $newCheckOut
+        );
+
+        $deltaCharge = $newCalculation['charge_amount'] - $oldCalculation['charge_amount'];
+        $deltaTax = $newCalculation['tax_amount'] - $oldCalculation['tax_amount'];
+
+        if ($deltaCharge <= 0 && $deltaTax <= 0) {
+            return;
+        }
+
+        $additionalNights = Carbon::parse($oldCheckOut)->diffInDays(Carbon::parse($newCheckOut));
+
+        $this->folioService->addCharge($folio, [
+            'type' => 'accommodation',
+            'description' => "Stay extension: {$additionalNights} nights",
+            'amount' => max($deltaCharge, 0),
+            'tax_amount' => max($deltaTax, 0),
+            'currency' => $newCalculation['currency'],
+        ], $actor);
+    }
+
+    private function assertRoomExtensionAvailability(Reservation $reservation, string $newCheckOut): void
+    {
+        if (! $reservation->room_id) {
+            return;
+        }
+
+        $roomOverlap = Reservation::query()
+            ->where('room_id', $reservation->room_id)
+            ->whereIn('status', ['confirmed', 'checked_in'])
+            ->where('id', '!=', $reservation->id)
+            ->where(function ($query) use ($reservation, $newCheckOut) {
+                $query->where('check_in', '<', $newCheckOut)
+                    ->where('check_out', '>', $reservation->check_in?->toDateString());
+            })
+            ->exists();
+
+        if ($roomOverlap) {
+            throw new HttpResponseException(response()->json([
+                'code' => 'RESERVATION_ROOM_UNAVAILABLE',
+                'message' => 'Assigned room is not available for the extended dates.',
             ], 409));
         }
     }

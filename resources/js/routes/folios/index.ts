@@ -1,6 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
 import charges from './charges'
 import payments from './payments'
+import refunds from './refunds'
 /**
  * @see routes/web.php:352
  * @route '/folios/{folio}'
@@ -100,6 +101,7 @@ const folios = {
     show: Object.assign(show, show),
 charges: Object.assign(charges, charges),
 payments: Object.assign(payments, payments),
+refunds: Object.assign(refunds, refunds),
 }
 
 export default folios

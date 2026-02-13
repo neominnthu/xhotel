@@ -79,7 +79,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\Api\HousekeepingTaskController::store
- * @see app/Http/Controllers/Api/HousekeepingTaskController.php:60
+ * @see app/Http/Controllers/Api/HousekeepingTaskController.php:75
  * @route '/api/v1/housekeeping/tasks'
  */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -94,7 +94,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\Api\HousekeepingTaskController::store
- * @see app/Http/Controllers/Api/HousekeepingTaskController.php:60
+ * @see app/Http/Controllers/Api/HousekeepingTaskController.php:75
  * @route '/api/v1/housekeeping/tasks'
  */
 store.url = (options?: RouteQueryOptions) => {
@@ -103,7 +103,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Api\HousekeepingTaskController::store
- * @see app/Http/Controllers/Api/HousekeepingTaskController.php:60
+ * @see app/Http/Controllers/Api/HousekeepingTaskController.php:75
  * @route '/api/v1/housekeeping/tasks'
  */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -113,7 +113,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\Api\HousekeepingTaskController::store
- * @see app/Http/Controllers/Api/HousekeepingTaskController.php:60
+ * @see app/Http/Controllers/Api/HousekeepingTaskController.php:75
  * @route '/api/v1/housekeeping/tasks'
  */
     const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -123,7 +123,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\Api\HousekeepingTaskController::store
- * @see app/Http/Controllers/Api/HousekeepingTaskController.php:60
+ * @see app/Http/Controllers/Api/HousekeepingTaskController.php:75
  * @route '/api/v1/housekeeping/tasks'
  */
         storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -134,7 +134,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     store.form = storeForm
 /**
 * @see \App\Http\Controllers\Api\HousekeepingTaskController::bulkUpdate
- * @see app/Http/Controllers/Api/HousekeepingTaskController.php:115
+ * @see app/Http/Controllers/Api/HousekeepingTaskController.php:130
  * @route '/api/v1/housekeeping/tasks/bulk'
  */
 export const bulkUpdate = (options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -149,7 +149,7 @@ bulkUpdate.definition = {
 
 /**
 * @see \App\Http\Controllers\Api\HousekeepingTaskController::bulkUpdate
- * @see app/Http/Controllers/Api/HousekeepingTaskController.php:115
+ * @see app/Http/Controllers/Api/HousekeepingTaskController.php:130
  * @route '/api/v1/housekeeping/tasks/bulk'
  */
 bulkUpdate.url = (options?: RouteQueryOptions) => {
@@ -158,7 +158,7 @@ bulkUpdate.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Api\HousekeepingTaskController::bulkUpdate
- * @see app/Http/Controllers/Api/HousekeepingTaskController.php:115
+ * @see app/Http/Controllers/Api/HousekeepingTaskController.php:130
  * @route '/api/v1/housekeeping/tasks/bulk'
  */
 bulkUpdate.patch = (options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -168,7 +168,7 @@ bulkUpdate.patch = (options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
 
     /**
 * @see \App\Http\Controllers\Api\HousekeepingTaskController::bulkUpdate
- * @see app/Http/Controllers/Api/HousekeepingTaskController.php:115
+ * @see app/Http/Controllers/Api/HousekeepingTaskController.php:130
  * @route '/api/v1/housekeeping/tasks/bulk'
  */
     const bulkUpdateForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -183,7 +183,7 @@ bulkUpdate.patch = (options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
 
             /**
 * @see \App\Http\Controllers\Api\HousekeepingTaskController::bulkUpdate
- * @see app/Http/Controllers/Api/HousekeepingTaskController.php:115
+ * @see app/Http/Controllers/Api/HousekeepingTaskController.php:130
  * @route '/api/v1/housekeeping/tasks/bulk'
  */
         bulkUpdateForm.patch = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -199,7 +199,7 @@ bulkUpdate.patch = (options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
     bulkUpdate.form = bulkUpdateForm
 /**
 * @see \App\Http\Controllers\Api\HousekeepingTaskController::update
- * @see app/Http/Controllers/Api/HousekeepingTaskController.php:91
+ * @see app/Http/Controllers/Api/HousekeepingTaskController.php:106
  * @route '/api/v1/housekeeping/tasks/{task}'
  */
 export const update = (args: { task: number | { id: number } } | [task: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -214,7 +214,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\Api\HousekeepingTaskController::update
- * @see app/Http/Controllers/Api/HousekeepingTaskController.php:91
+ * @see app/Http/Controllers/Api/HousekeepingTaskController.php:106
  * @route '/api/v1/housekeeping/tasks/{task}'
  */
 update.url = (args: { task: number | { id: number } } | [task: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -247,7 +247,7 @@ update.url = (args: { task: number | { id: number } } | [task: number | { id: nu
 
 /**
 * @see \App\Http\Controllers\Api\HousekeepingTaskController::update
- * @see app/Http/Controllers/Api/HousekeepingTaskController.php:91
+ * @see app/Http/Controllers/Api/HousekeepingTaskController.php:106
  * @route '/api/v1/housekeeping/tasks/{task}'
  */
 update.patch = (args: { task: number | { id: number } } | [task: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -257,7 +257,7 @@ update.patch = (args: { task: number | { id: number } } | [task: number | { id: 
 
     /**
 * @see \App\Http\Controllers\Api\HousekeepingTaskController::update
- * @see app/Http/Controllers/Api/HousekeepingTaskController.php:91
+ * @see app/Http/Controllers/Api/HousekeepingTaskController.php:106
  * @route '/api/v1/housekeeping/tasks/{task}'
  */
     const updateForm = (args: { task: number | { id: number } } | [task: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -272,7 +272,7 @@ update.patch = (args: { task: number | { id: number } } | [task: number | { id: 
 
             /**
 * @see \App\Http\Controllers\Api\HousekeepingTaskController::update
- * @see app/Http/Controllers/Api/HousekeepingTaskController.php:91
+ * @see app/Http/Controllers/Api/HousekeepingTaskController.php:106
  * @route '/api/v1/housekeeping/tasks/{task}'
  */
         updateForm.patch = (args: { task: number | { id: number } } | [task: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Api\FrontDeskController::dashboard
- * @see app/Http/Controllers/Api/FrontDeskController.php:30
+ * @see app/Http/Controllers/Api/FrontDeskController.php:32
  * @route '/api/v1/front-desk/dashboard'
  */
 export const dashboard = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ dashboard.definition = {
 
 /**
 * @see \App\Http\Controllers\Api\FrontDeskController::dashboard
- * @see app/Http/Controllers/Api/FrontDeskController.php:30
+ * @see app/Http/Controllers/Api/FrontDeskController.php:32
  * @route '/api/v1/front-desk/dashboard'
  */
 dashboard.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ dashboard.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Api\FrontDeskController::dashboard
- * @see app/Http/Controllers/Api/FrontDeskController.php:30
+ * @see app/Http/Controllers/Api/FrontDeskController.php:32
  * @route '/api/v1/front-desk/dashboard'
  */
 dashboard.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ dashboard.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Api\FrontDeskController::dashboard
- * @see app/Http/Controllers/Api/FrontDeskController.php:30
+ * @see app/Http/Controllers/Api/FrontDeskController.php:32
  * @route '/api/v1/front-desk/dashboard'
  */
 dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Api\FrontDeskController::dashboard
- * @see app/Http/Controllers/Api/FrontDeskController.php:30
+ * @see app/Http/Controllers/Api/FrontDeskController.php:32
  * @route '/api/v1/front-desk/dashboard'
  */
     const dashboardForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Api\FrontDeskController::dashboard
- * @see app/Http/Controllers/Api/FrontDeskController.php:30
+ * @see app/Http/Controllers/Api/FrontDeskController.php:32
  * @route '/api/v1/front-desk/dashboard'
  */
         dashboardForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Api\FrontDeskController::dashboard
- * @see app/Http/Controllers/Api/FrontDeskController.php:30
+ * @see app/Http/Controllers/Api/FrontDeskController.php:32
  * @route '/api/v1/front-desk/dashboard'
  */
         dashboardForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     dashboard.form = dashboardForm
 /**
 * @see \App\Http\Controllers\Api\FrontDeskController::checkIn
- * @see app/Http/Controllers/Api/FrontDeskController.php:82
+ * @see app/Http/Controllers/Api/FrontDeskController.php:84
  * @route '/api/v1/front-desk/reservations/{reservation}/check-in'
  */
 export const checkIn = (args: { reservation: number | { id: number } } | [reservation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -94,7 +94,7 @@ checkIn.definition = {
 
 /**
 * @see \App\Http\Controllers\Api\FrontDeskController::checkIn
- * @see app/Http/Controllers/Api/FrontDeskController.php:82
+ * @see app/Http/Controllers/Api/FrontDeskController.php:84
  * @route '/api/v1/front-desk/reservations/{reservation}/check-in'
  */
 checkIn.url = (args: { reservation: number | { id: number } } | [reservation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -127,7 +127,7 @@ checkIn.url = (args: { reservation: number | { id: number } } | [reservation: nu
 
 /**
 * @see \App\Http\Controllers\Api\FrontDeskController::checkIn
- * @see app/Http/Controllers/Api/FrontDeskController.php:82
+ * @see app/Http/Controllers/Api/FrontDeskController.php:84
  * @route '/api/v1/front-desk/reservations/{reservation}/check-in'
  */
 checkIn.post = (args: { reservation: number | { id: number } } | [reservation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -137,7 +137,7 @@ checkIn.post = (args: { reservation: number | { id: number } } | [reservation: n
 
     /**
 * @see \App\Http\Controllers\Api\FrontDeskController::checkIn
- * @see app/Http/Controllers/Api/FrontDeskController.php:82
+ * @see app/Http/Controllers/Api/FrontDeskController.php:84
  * @route '/api/v1/front-desk/reservations/{reservation}/check-in'
  */
     const checkInForm = (args: { reservation: number | { id: number } } | [reservation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -147,7 +147,7 @@ checkIn.post = (args: { reservation: number | { id: number } } | [reservation: n
 
             /**
 * @see \App\Http\Controllers\Api\FrontDeskController::checkIn
- * @see app/Http/Controllers/Api/FrontDeskController.php:82
+ * @see app/Http/Controllers/Api/FrontDeskController.php:84
  * @route '/api/v1/front-desk/reservations/{reservation}/check-in'
  */
         checkInForm.post = (args: { reservation: number | { id: number } } | [reservation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -158,7 +158,7 @@ checkIn.post = (args: { reservation: number | { id: number } } | [reservation: n
     checkIn.form = checkInForm
 /**
 * @see \App\Http\Controllers\Api\FrontDeskController::checkOut
- * @see app/Http/Controllers/Api/FrontDeskController.php:106
+ * @see app/Http/Controllers/Api/FrontDeskController.php:107
  * @route '/api/v1/front-desk/stays/{stay}/check-out'
  */
 export const checkOut = (args: { stay: number | { id: number } } | [stay: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -173,7 +173,7 @@ checkOut.definition = {
 
 /**
 * @see \App\Http\Controllers\Api\FrontDeskController::checkOut
- * @see app/Http/Controllers/Api/FrontDeskController.php:106
+ * @see app/Http/Controllers/Api/FrontDeskController.php:107
  * @route '/api/v1/front-desk/stays/{stay}/check-out'
  */
 checkOut.url = (args: { stay: number | { id: number } } | [stay: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -206,7 +206,7 @@ checkOut.url = (args: { stay: number | { id: number } } | [stay: number | { id: 
 
 /**
 * @see \App\Http\Controllers\Api\FrontDeskController::checkOut
- * @see app/Http/Controllers/Api/FrontDeskController.php:106
+ * @see app/Http/Controllers/Api/FrontDeskController.php:107
  * @route '/api/v1/front-desk/stays/{stay}/check-out'
  */
 checkOut.post = (args: { stay: number | { id: number } } | [stay: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -216,7 +216,7 @@ checkOut.post = (args: { stay: number | { id: number } } | [stay: number | { id:
 
     /**
 * @see \App\Http\Controllers\Api\FrontDeskController::checkOut
- * @see app/Http/Controllers/Api/FrontDeskController.php:106
+ * @see app/Http/Controllers/Api/FrontDeskController.php:107
  * @route '/api/v1/front-desk/stays/{stay}/check-out'
  */
     const checkOutForm = (args: { stay: number | { id: number } } | [stay: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -226,7 +226,7 @@ checkOut.post = (args: { stay: number | { id: number } } | [stay: number | { id:
 
             /**
 * @see \App\Http\Controllers\Api\FrontDeskController::checkOut
- * @see app/Http/Controllers/Api/FrontDeskController.php:106
+ * @see app/Http/Controllers/Api/FrontDeskController.php:107
  * @route '/api/v1/front-desk/stays/{stay}/check-out'
  */
         checkOutForm.post = (args: { stay: number | { id: number } } | [stay: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -235,6 +235,85 @@ checkOut.post = (args: { stay: number | { id: number } } | [stay: number | { id:
         })
     
     checkOut.form = checkOutForm
+/**
+* @see \App\Http\Controllers\Api\FrontDeskController::extendStay
+ * @see app/Http/Controllers/Api/FrontDeskController.php:207
+ * @route '/api/v1/front-desk/stays/{stay}/extend'
+ */
+export const extendStay = (args: { stay: number | { id: number } } | [stay: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: extendStay.url(args, options),
+    method: 'post',
+})
+
+extendStay.definition = {
+    methods: ["post"],
+    url: '/api/v1/front-desk/stays/{stay}/extend',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\Api\FrontDeskController::extendStay
+ * @see app/Http/Controllers/Api/FrontDeskController.php:207
+ * @route '/api/v1/front-desk/stays/{stay}/extend'
+ */
+extendStay.url = (args: { stay: number | { id: number } } | [stay: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { stay: args }
+    }
+
+            if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
+            args = { stay: args.id }
+        }
+    
+    if (Array.isArray(args)) {
+        args = {
+                    stay: args[0],
+                }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+                        stay: typeof args.stay === 'object'
+                ? args.stay.id
+                : args.stay,
+                }
+
+    return extendStay.definition.url
+            .replace('{stay}', parsedArgs.stay.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Api\FrontDeskController::extendStay
+ * @see app/Http/Controllers/Api/FrontDeskController.php:207
+ * @route '/api/v1/front-desk/stays/{stay}/extend'
+ */
+extendStay.post = (args: { stay: number | { id: number } } | [stay: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: extendStay.url(args, options),
+    method: 'post',
+})
+
+    /**
+* @see \App\Http\Controllers\Api\FrontDeskController::extendStay
+ * @see app/Http/Controllers/Api/FrontDeskController.php:207
+ * @route '/api/v1/front-desk/stays/{stay}/extend'
+ */
+    const extendStayForm = (args: { stay: number | { id: number } } | [stay: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: extendStay.url(args, options),
+        method: 'post',
+    })
+
+            /**
+* @see \App\Http\Controllers\Api\FrontDeskController::extendStay
+ * @see app/Http/Controllers/Api/FrontDeskController.php:207
+ * @route '/api/v1/front-desk/stays/{stay}/extend'
+ */
+        extendStayForm.post = (args: { stay: number | { id: number } } | [stay: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: extendStay.url(args, options),
+            method: 'post',
+        })
+    
+    extendStay.form = extendStayForm
 /**
 * @see \App\Http\Controllers\Api\FrontDeskController::searchGuests
  * @see app/Http/Controllers/Api/FrontDeskController.php:125
@@ -496,7 +575,7 @@ assignRoom.post = (args: { stay: number | { id: number } } | [stay: number | { i
     assignRoom.form = assignRoomForm
 /**
 * @see \App\Http\Controllers\Api\FrontDeskController::getAvailableRooms
- * @see app/Http/Controllers/Api/FrontDeskController.php:207
+ * @see app/Http/Controllers/Api/FrontDeskController.php:232
  * @route '/api/v1/front-desk/rooms/available'
  */
 export const getAvailableRooms = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -511,7 +590,7 @@ getAvailableRooms.definition = {
 
 /**
 * @see \App\Http\Controllers\Api\FrontDeskController::getAvailableRooms
- * @see app/Http/Controllers/Api/FrontDeskController.php:207
+ * @see app/Http/Controllers/Api/FrontDeskController.php:232
  * @route '/api/v1/front-desk/rooms/available'
  */
 getAvailableRooms.url = (options?: RouteQueryOptions) => {
@@ -520,7 +599,7 @@ getAvailableRooms.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Api\FrontDeskController::getAvailableRooms
- * @see app/Http/Controllers/Api/FrontDeskController.php:207
+ * @see app/Http/Controllers/Api/FrontDeskController.php:232
  * @route '/api/v1/front-desk/rooms/available'
  */
 getAvailableRooms.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -529,7 +608,7 @@ getAvailableRooms.get = (options?: RouteQueryOptions): RouteDefinition<'get'> =>
 })
 /**
 * @see \App\Http\Controllers\Api\FrontDeskController::getAvailableRooms
- * @see app/Http/Controllers/Api/FrontDeskController.php:207
+ * @see app/Http/Controllers/Api/FrontDeskController.php:232
  * @route '/api/v1/front-desk/rooms/available'
  */
 getAvailableRooms.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -539,7 +618,7 @@ getAvailableRooms.head = (options?: RouteQueryOptions): RouteDefinition<'head'> 
 
     /**
 * @see \App\Http\Controllers\Api\FrontDeskController::getAvailableRooms
- * @see app/Http/Controllers/Api/FrontDeskController.php:207
+ * @see app/Http/Controllers/Api/FrontDeskController.php:232
  * @route '/api/v1/front-desk/rooms/available'
  */
     const getAvailableRoomsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -549,7 +628,7 @@ getAvailableRooms.head = (options?: RouteQueryOptions): RouteDefinition<'head'> 
 
             /**
 * @see \App\Http\Controllers\Api\FrontDeskController::getAvailableRooms
- * @see app/Http/Controllers/Api/FrontDeskController.php:207
+ * @see app/Http/Controllers/Api/FrontDeskController.php:232
  * @route '/api/v1/front-desk/rooms/available'
  */
         getAvailableRoomsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -558,7 +637,7 @@ getAvailableRooms.head = (options?: RouteQueryOptions): RouteDefinition<'head'> 
         })
             /**
 * @see \App\Http\Controllers\Api\FrontDeskController::getAvailableRooms
- * @see app/Http/Controllers/Api/FrontDeskController.php:207
+ * @see app/Http/Controllers/Api/FrontDeskController.php:232
  * @route '/api/v1/front-desk/rooms/available'
  */
         getAvailableRoomsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -572,6 +651,6 @@ getAvailableRooms.head = (options?: RouteQueryOptions): RouteDefinition<'head'> 
         })
     
     getAvailableRooms.form = getAvailableRoomsForm
-const FrontDeskController = { dashboard, checkIn, checkOut, searchGuests, getGuest, assignRoom, getAvailableRooms }
+const FrontDeskController = { dashboard, checkIn, checkOut, extendStay, searchGuests, getGuest, assignRoom, getAvailableRooms }
 
 export default FrontDeskController

@@ -182,6 +182,13 @@ Unless noted, all fields are required.
 - payment.exchange_rate: optional, numeric, min:0.000001
 - stay status must be checked_in
 
+### POST /front-desk/stays/{id}/extend
+
+- path id: required, integer, exists:stays,id
+- check_out: required, date, after:today
+- stay status must be checked_in
+- check_out must be after current reservation check_out
+
 ## Folios, Charges, Payments
 
 ### GET /folios/{id}
@@ -207,6 +214,24 @@ Unless noted, all fields are required.
 - exchange_rate: optional, numeric, min:0.000001
 - reference: optional, string, max:64
 - folio must be open
+
+### POST /folios/{id}/refunds
+
+- path id: required, integer, exists:folios,id
+- method: required, in: cash, card, bank_transfer, digital_wallet, check, voucher, other
+- amount: required, integer, min:1
+- currency: required, string, size:3
+- exchange_rate: optional, numeric, min:0.000001
+- reference: optional, string, max:64
+- reason: optional, string, max:255
+- payment_id: optional, integer, exists:payments,id
+- folio balance must be zero
+
+### POST /refunds/{id}/approve
+
+- path id: required, integer, exists:refunds,id
+- reference: optional, string, max:64
+- refund status must be pending
 
 ### GET /folios/{id}/statement
 

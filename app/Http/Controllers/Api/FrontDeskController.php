@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FrontDesk\AssignRoomRequest;
 use App\Http\Requests\FrontDesk\AvailableRoomsRequest;
+use App\Http\Requests\FrontDesk\ExtendStayRequest;
 use App\Http\Requests\FrontDesk\SearchGuestsRequest;
 use App\Http\Requests\Stays\CheckInRequest;
 use App\Http\Requests\Stays\CheckOutRequest;
@@ -13,9 +14,10 @@ use App\Models\Reservation;
 use App\Models\Room;
 use App\Models\Stay;
 use App\Services\FrontDeskService;
+use App\Services\ReservationService;
 use App\Services\StayService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 class FrontDeskController extends Controller
@@ -35,9 +37,9 @@ class FrontDeskController extends Controller
 
         // Get room status summary
         $roomSummary = Room::selectRaw('status as room_status, housekeeping_status, COUNT(*) as count')
-                  ->groupBy('status', 'housekeeping_status')
-                          ->get()
-                          ->groupBy('room_status');
+            ->groupBy('status', 'housekeeping_status')
+            ->get()
+            ->groupBy('room_status');
 
         return response()->json([
             'expected_arrivals' => $expectedArrivals->map(function ($stay) {
@@ -83,8 +85,7 @@ class FrontDeskController extends Controller
         CheckInRequest $request,
         Reservation $reservation,
         StayService $stayService
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $this->authorize('update', $reservation);
 
         $stay = $reservation->stay ?? Stay::create([
@@ -107,8 +108,7 @@ class FrontDeskController extends Controller
         CheckOutRequest $request,
         Stay $stay,
         StayService $stayService
-    ): JsonResponse
-    {
+    ): JsonResponse {
         $this->authorize('update', $stay->reservation);
 
         $stay = $stayService->checkOut($stay, $request->validated(), $request->user());
@@ -199,6 +199,31 @@ class FrontDeskController extends Controller
                 'errors' => $e->errors(),
             ], 422);
         }
+    }
+
+    /**
+     * Extend a checked-in stay.
+     */
+    public function extendStay(
+        ExtendStayRequest $request,
+        Stay $stay,
+        ReservationService $reservationService
+    ): JsonResponse {
+        $this->authorize('update', $stay->reservation);
+
+        $reservation = $reservationService->extendReservation(
+            $stay->reservation,
+            $request->validated('check_out'),
+            $request->user()
+        );
+
+        return response()->json([
+            'message' => 'Stay extended successfully',
+            'reservation' => [
+                'id' => $reservation->id,
+                'check_out' => $reservation->check_out?->toDateString(),
+            ],
+        ]);
     }
 
     /**
