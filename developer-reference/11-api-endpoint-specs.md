@@ -297,6 +297,46 @@ Response
 Response
 302 redirect with flash success.
 
+### GET /settings/exchange-rates
+
+Response
+Inertia page with exchange rate list and form state.
+
+### POST /settings/exchange-rates
+
+Request
+{
+  "base_currency": "MMK",
+  "quote_currency": "USD",
+  "rate": 3500,
+  "effective_date": "2026-02-13",
+  "source": "manual",
+  "is_active": true
+}
+
+Response
+302 redirect with flash success or validation errors.
+
+### PATCH /settings/exchange-rates/{exchangeRate}
+
+Request
+{
+  "base_currency": "MMK",
+  "quote_currency": "USD",
+  "rate": 3600,
+  "effective_date": "2026-02-14",
+  "source": "manual",
+  "is_active": false
+}
+
+Response
+302 redirect with flash success or validation errors.
+
+### DELETE /settings/exchange-rates/{exchangeRate}
+
+Response
+302 redirect with flash success.
+
 ## Reservations
 
 ### GET /reservations
@@ -355,7 +395,9 @@ Response
 Request
 {
   "check_out": "2026-02-17",
-  "adults": 3
+  "adults": 3,
+  "room_id": 210,
+  "special_requests": "Late check-in"
 }
 
 Response
@@ -631,6 +673,57 @@ Response
   "data": [
     {"id": 1, "from_status": "dirty", "to_status": "clean", "changed_at": "2026-02-14T07:00:00Z"}
   ]
+}
+
+## Cashier Shifts
+
+### POST /cashier-shifts/open
+
+Request
+{
+  "opening_cash": 20000,
+  "currency": "MMK",
+  "notes": "Morning shift"
+}
+
+Response
+{
+  "id": 31,
+  "status": "open",
+  "currency": "MMK",
+  "opening_cash": 20000,
+  "opened_at": "2026-02-14T01:00:00Z"
+}
+
+### POST /cashier-shifts/{id}/close
+
+Request
+{
+  "closing_cash": 19500,
+  "notes": "End of shift"
+}
+
+Response
+{
+  "id": 31,
+  "status": "closed",
+  "total_cash": 10000,
+  "total_card": 5000,
+  "expected_cash": 20000,
+  "variance": -500,
+  "closed_at": "2026-02-14T09:00:00Z"
+}
+
+### GET /cashier-shifts/current
+
+Response
+{
+  "data": {
+    "id": 31,
+    "status": "open",
+    "opening_cash": 20000,
+    "opened_at": "2026-02-14T01:00:00Z"
+  }
 }
 
 ## Reports

@@ -1,5 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
 import users from './users'
+import roles from './roles'
+import permissions from './permissions'
 /**
 * @see \App\Http\Controllers\Admin\AdminController::index
  * @see app/Http/Controllers/Admin/AdminController.php:18
@@ -81,6 +83,8 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 const admin = {
     index: Object.assign(index, index),
 users: Object.assign(users, users),
+roles: Object.assign(roles, roles),
+permissions: Object.assign(permissions, permissions),
 }
 
 export default admin

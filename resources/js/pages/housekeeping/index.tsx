@@ -1396,7 +1396,95 @@ export default function HousekeepingIndex({
                         </div>
                     ) : null}
 
-                    <div className="w-full overflow-x-auto">
+                    <div className="w-full lg:hidden">
+                        {isFiltering ? (
+                            <div className="space-y-3 p-4">
+                                {Array.from({ length: 4 }).map((_, index) => (
+                                    <div
+                                        key={`mobile-skeleton-${index}`}
+                                        className="rounded-lg border border-border p-4"
+                                    >
+                                        <div className="h-4 w-24 rounded bg-muted/70 motion-safe:animate-pulse" />
+                                        <div className="mt-3 h-4 w-40 rounded bg-muted/70 motion-safe:animate-pulse" />
+                                        <div className="mt-3 h-4 w-28 rounded bg-muted/70 motion-safe:animate-pulse" />
+                                    </div>
+                                ))}
+                            </div>
+                        ) : taskRows.length === 0 ? (
+                            <div className="px-4 py-8 text-center text-muted-foreground">
+                                No tasks found.
+                            </div>
+                        ) : (
+                            <div className="space-y-3 p-4">
+                                {taskRows.map((task) => (
+                                    <div
+                                        key={task.id}
+                                        className="rounded-lg border border-border p-4"
+                                    >
+                                        <div className="flex items-start justify-between gap-3">
+                                            <div className="flex items-center gap-3">
+                                                <Checkbox
+                                                    checked={selectedTaskIds.includes(task.id)}
+                                                    onCheckedChange={(value) => {
+                                                        if (value === 'indeterminate') {
+                                                            return;
+                                                        }
+                                                        toggleTaskSelection(task.id);
+                                                    }}
+                                                    disabled={isFiltering}
+                                                    aria-label={`Select task ${task.id}`}
+                                                />
+                                                <div>
+                                                    <div className="text-sm font-semibold text-foreground">
+                                                        {task.room ? (
+                                                            <Link
+                                                                className="text-primary underline-offset-4 hover:underline"
+                                                                href={`/housekeeping/rooms/${task.room.id}`}
+                                                            >
+                                                                Room {task.room.number}
+                                                            </Link>
+                                                        ) : (
+                                                            'Room —'
+                                                        )}
+                                                    </div>
+                                                    <div className="text-xs text-muted-foreground">
+                                                        {task.type} • {task.priority}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <Badge variant={statusVariant(task.status)}>
+                                                {task.status.replace('_', ' ')}
+                                            </Badge>
+                                        </div>
+                                        <div className="mt-3 grid gap-2 text-xs text-muted-foreground">
+                                            <div>
+                                                Assignee: {task.assignee?.name ?? 'Unassigned'}
+                                            </div>
+                                            <div>Due: {formatDateTime(task.due_at)}</div>
+                                            <div>
+                                                SLA:{' '}
+                                                <Badge variant={slaVariant(task.sla_status)}>
+                                                    {(task.sla_status ?? 'normal').replace('_', ' ')}
+                                                </Badge>
+                                            </div>
+                                        </div>
+                                        <div className="mt-4 flex justify-end">
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => startEdit(task)}
+                                            >
+                                                Update
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="hidden w-full overflow-x-auto lg:block">
                         <table className="w-full text-sm">
                             <thead className="bg-muted/50 text-xs uppercase text-muted-foreground">
                                 <tr>

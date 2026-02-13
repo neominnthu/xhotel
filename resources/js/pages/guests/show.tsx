@@ -134,6 +134,11 @@ export default function GuestsShow({ guest, reservations, merge_candidates }: Pr
     const preferencesText = Array.isArray(guest.preferences)
         ? guest.preferences.join(', ')
         : guest.preferences;
+    const preferencesList = Array.isArray(guest.preferences)
+        ? guest.preferences
+        : guest.preferences
+            ? guest.preferences.split(',').map((value) => value.trim()).filter(Boolean)
+            : [];
     const lastVisit = reservations[0]?.check_out;
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isMergeOpen, setIsMergeOpen] = useState(false);
@@ -613,6 +618,51 @@ export default function GuestsShow({ guest, reservations, merge_candidates }: Pr
                     </div>
                 </div>
 
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>စုစုပေါင်း တည်းခို</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-semibold">
+                                {guest.total_stays}
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>စုစုပေါင်း အသုံးစရိတ်</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-semibold">
+                                {formatCurrency(guest.total_spent)}
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>နောက်ဆုံး လာရောက်မှု</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-sm text-muted-foreground">
+                                {lastVisit ?? '—'}
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Blacklist</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            {guest.is_blacklisted ? (
+                                <Badge variant="destructive">Blacklist</Badge>
+                            ) : (
+                                <Badge variant="secondary">No</Badge>
+                            )}
+                        </CardContent>
+                    </Card>
+                </div>
+
                 {flash?.success && (
                     <Card>
                         <CardContent className="py-3 text-sm text-emerald-700">
@@ -715,16 +765,40 @@ export default function GuestsShow({ guest, reservations, merge_candidates }: Pr
                                     <CardTitle>Preferences & Notes</CardTitle>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
-                                    {preferencesText && (
+                                    {preferencesList.length > 0 && (
                                         <div>
                                             <label className="text-sm font-medium">Preferences</label>
-                                            <p className="text-sm text-muted-foreground">{preferencesText}</p>
+                                            <div className="mt-2 flex flex-wrap gap-2">
+                                                {preferencesList.map((item) => (
+                                                    <Badge key={item} variant="secondary">
+                                                        {item}
+                                                    </Badge>
+                                                ))}
+                                            </div>
                                         </div>
                                     )}
                                     {guest.notes && (
                                         <div>
                                             <label className="text-sm font-medium">Notes</label>
                                             <p className="text-sm text-muted-foreground">{guest.notes}</p>
+                                        </div>
+                                    )}
+                                    {guest.special_requests && (
+                                        <div>
+                                            <label className="text-sm font-medium">
+                                                Special requests
+                                            </label>
+                                            <p className="text-sm text-muted-foreground">
+                                                {guest.special_requests}
+                                            </p>
+                                        </div>
+                                    )}
+                                    {guest.is_blacklisted && guest.blacklist_reason && (
+                                        <div>
+                                            <label className="text-sm font-medium">Blacklist reason</label>
+                                            <p className="text-sm text-muted-foreground">
+                                                {guest.blacklist_reason}
+                                            </p>
                                         </div>
                                     )}
                                 </CardContent>

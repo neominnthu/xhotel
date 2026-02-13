@@ -14,6 +14,7 @@ import HousekeepingTaskController from './HousekeepingTaskController'
 import HousekeepingPerformanceController from './HousekeepingPerformanceController'
 import FrontDeskController from './FrontDeskController'
 import ReportsController from './ReportsController'
+import CashierShiftController from './CashierShiftController'
 import SystemUpdateController from './SystemUpdateController'
 import SystemBackupController from './SystemBackupController'
 import SystemReportController from './SystemReportController'
@@ -34,6 +35,7 @@ HousekeepingTaskController: Object.assign(HousekeepingTaskController, Housekeepi
 HousekeepingPerformanceController: Object.assign(HousekeepingPerformanceController, HousekeepingPerformanceController),
 FrontDeskController: Object.assign(FrontDeskController, FrontDeskController),
 ReportsController: Object.assign(ReportsController, ReportsController),
+CashierShiftController: Object.assign(CashierShiftController, CashierShiftController),
 SystemUpdateController: Object.assign(SystemUpdateController, SystemUpdateController),
 SystemBackupController: Object.assign(SystemBackupController, SystemBackupController),
 SystemReportController: Object.assign(SystemReportController, SystemReportController),

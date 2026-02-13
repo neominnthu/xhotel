@@ -1,5 +1,17 @@
 import { Link, usePage } from '@inertiajs/react';
-import { BarChart3, BookOpen, CalendarDays, Cog, Folder, LayoutGrid, Sparkles } from 'lucide-react';
+import {
+    BarChart3,
+    BookOpen,
+    CalendarDays,
+    Cog,
+    Folder,
+    LayoutGrid,
+    Moon,
+    Shield,
+    Sparkles,
+    Table,
+    Wallet,
+} from 'lucide-react';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
@@ -35,6 +47,11 @@ const baseNavItems: NavItem[] = [
         icon: CalendarDays,
     },
     {
+        title: 'Room Inventory',
+        href: '/room-inventory',
+        icon: Table,
+    },
+    {
         title: 'Housekeeping',
         href: '/housekeeping',
         icon: Sparkles,
@@ -45,9 +62,24 @@ const baseNavItems: NavItem[] = [
         icon: BarChart3,
     },
     {
+        title: 'Night Audit',
+        href: '/night-audit',
+        icon: Moon,
+    },
+    {
+        title: 'Cashier Shifts',
+        href: '/cashier-shifts',
+        icon: Wallet,
+    },
+    {
         title: 'Settings',
         href: '/settings/updates',
         icon: Cog,
+    },
+    {
+        title: 'Admin',
+        href: '/admin',
+        icon: Shield,
     },
     {
         title: 'Audit Logs',
@@ -78,13 +110,27 @@ export function AppSidebar() {
     const role = auth?.user?.role ?? '';
     const canManageSettings = ['admin', 'reservation_manager'].includes(role);
     const isAdmin = role === 'admin';
+    const canViewCashierShifts = ['admin', 'cashier'].includes(role);
+    const canViewRoomInventory = ['admin', 'reservation_manager', 'front_desk'].includes(role);
     const mainNavItems = baseNavItems.filter((item) => {
         if (item.title === 'Settings') {
             return canManageSettings;
         }
 
+        if (item.title === 'Admin') {
+            return isAdmin;
+        }
+
         if (item.title === 'Audit Logs') {
             return isAdmin;
+        }
+
+        if (item.title === 'Cashier Shifts') {
+            return canViewCashierShifts;
+        }
+
+        if (item.title === 'Room Inventory') {
+            return canViewRoomInventory;
         }
 
         return true;

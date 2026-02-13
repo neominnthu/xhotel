@@ -493,6 +493,12 @@ components:
       required: true
       schema:
         type: integer
+    cashierShiftId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
     filterStatus:
       name: filter[status]
       in: query
@@ -984,6 +990,68 @@ components:
         total_card:
           type: integer
       required: [date, cashier, total_cash, total_card]
+    CashierShift:
+      type: object
+      properties:
+        id:
+          type: integer
+        cashier_id:
+          type: integer
+        status:
+          type: string
+        currency:
+          type: string
+        opening_cash:
+          type: integer
+        closing_cash:
+          type: integer
+          nullable: true
+        expected_cash:
+          type: integer
+          nullable: true
+        variance:
+          type: integer
+          nullable: true
+        total_cash:
+          type: integer
+        total_card:
+          type: integer
+        opened_at:
+          type: string
+          format: date-time
+        closed_at:
+          type: string
+          format: date-time
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+      required: [id, cashier_id, status, currency, opening_cash, total_cash, total_card, opened_at]
+    CashierShiftOpenRequest:
+      type: object
+      properties:
+        opening_cash:
+          type: integer
+        currency:
+          type: string
+        notes:
+          type: string
+      required: [opening_cash]
+    CashierShiftCloseRequest:
+      type: object
+      properties:
+        closing_cash:
+          type: integer
+        notes:
+          type: string
+      required: [closing_cash]
+    CashierShiftResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/CashierShift'
+          nullable: true
+      required: [data]
     User:
       type: object
       properties:

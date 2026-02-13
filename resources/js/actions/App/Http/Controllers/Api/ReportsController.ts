@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Api\ReportsController::occupancy
- * @see app/Http/Controllers/Api/ReportsController.php:13
+ * @see app/Http/Controllers/Api/ReportsController.php:16
  * @route '/api/v1/reports/occupancy'
  */
 export const occupancy = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ occupancy.definition = {
 
 /**
 * @see \App\Http\Controllers\Api\ReportsController::occupancy
- * @see app/Http/Controllers/Api/ReportsController.php:13
+ * @see app/Http/Controllers/Api/ReportsController.php:16
  * @route '/api/v1/reports/occupancy'
  */
 occupancy.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ occupancy.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Api\ReportsController::occupancy
- * @see app/Http/Controllers/Api/ReportsController.php:13
+ * @see app/Http/Controllers/Api/ReportsController.php:16
  * @route '/api/v1/reports/occupancy'
  */
 occupancy.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ occupancy.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Api\ReportsController::occupancy
- * @see app/Http/Controllers/Api/ReportsController.php:13
+ * @see app/Http/Controllers/Api/ReportsController.php:16
  * @route '/api/v1/reports/occupancy'
  */
 occupancy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ occupancy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Api\ReportsController::occupancy
- * @see app/Http/Controllers/Api/ReportsController.php:13
+ * @see app/Http/Controllers/Api/ReportsController.php:16
  * @route '/api/v1/reports/occupancy'
  */
     const occupancyForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ occupancy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Api\ReportsController::occupancy
- * @see app/Http/Controllers/Api/ReportsController.php:13
+ * @see app/Http/Controllers/Api/ReportsController.php:16
  * @route '/api/v1/reports/occupancy'
  */
         occupancyForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ occupancy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Api\ReportsController::occupancy
- * @see app/Http/Controllers/Api/ReportsController.php:13
+ * @see app/Http/Controllers/Api/ReportsController.php:16
  * @route '/api/v1/reports/occupancy'
  */
         occupancyForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -78,8 +78,86 @@ occupancy.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     
     occupancy.form = occupancyForm
 /**
+* @see \App\Http\Controllers\Api\ReportsController::cashierShift
+ * @see app/Http/Controllers/Api/ReportsController.php:116
+ * @route '/api/v1/reports/cashier-shift'
+ */
+export const cashierShift = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: cashierShift.url(options),
+    method: 'get',
+})
+
+cashierShift.definition = {
+    methods: ["get","head"],
+    url: '/api/v1/reports/cashier-shift',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\Api\ReportsController::cashierShift
+ * @see app/Http/Controllers/Api/ReportsController.php:116
+ * @route '/api/v1/reports/cashier-shift'
+ */
+cashierShift.url = (options?: RouteQueryOptions) => {
+    return cashierShift.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Api\ReportsController::cashierShift
+ * @see app/Http/Controllers/Api/ReportsController.php:116
+ * @route '/api/v1/reports/cashier-shift'
+ */
+cashierShift.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: cashierShift.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\Api\ReportsController::cashierShift
+ * @see app/Http/Controllers/Api/ReportsController.php:116
+ * @route '/api/v1/reports/cashier-shift'
+ */
+cashierShift.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: cashierShift.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\Api\ReportsController::cashierShift
+ * @see app/Http/Controllers/Api/ReportsController.php:116
+ * @route '/api/v1/reports/cashier-shift'
+ */
+    const cashierShiftForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: cashierShift.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\Api\ReportsController::cashierShift
+ * @see app/Http/Controllers/Api/ReportsController.php:116
+ * @route '/api/v1/reports/cashier-shift'
+ */
+        cashierShiftForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: cashierShift.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\Api\ReportsController::cashierShift
+ * @see app/Http/Controllers/Api/ReportsController.php:116
+ * @route '/api/v1/reports/cashier-shift'
+ */
+        cashierShiftForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: cashierShift.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    cashierShift.form = cashierShiftForm
+/**
 * @see \App\Http\Controllers\Api\ReportsController::revenue
- * @see app/Http/Controllers/Api/ReportsController.php:32
+ * @see app/Http/Controllers/Api/ReportsController.php:35
  * @route '/api/v1/reports/revenue'
  */
 export const revenue = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -94,7 +172,7 @@ revenue.definition = {
 
 /**
 * @see \App\Http\Controllers\Api\ReportsController::revenue
- * @see app/Http/Controllers/Api/ReportsController.php:32
+ * @see app/Http/Controllers/Api/ReportsController.php:35
  * @route '/api/v1/reports/revenue'
  */
 revenue.url = (options?: RouteQueryOptions) => {
@@ -103,7 +181,7 @@ revenue.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Api\ReportsController::revenue
- * @see app/Http/Controllers/Api/ReportsController.php:32
+ * @see app/Http/Controllers/Api/ReportsController.php:35
  * @route '/api/v1/reports/revenue'
  */
 revenue.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -112,7 +190,7 @@ revenue.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Api\ReportsController::revenue
- * @see app/Http/Controllers/Api/ReportsController.php:32
+ * @see app/Http/Controllers/Api/ReportsController.php:35
  * @route '/api/v1/reports/revenue'
  */
 revenue.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -122,7 +200,7 @@ revenue.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\Api\ReportsController::revenue
- * @see app/Http/Controllers/Api/ReportsController.php:32
+ * @see app/Http/Controllers/Api/ReportsController.php:35
  * @route '/api/v1/reports/revenue'
  */
     const revenueForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -132,7 +210,7 @@ revenue.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\Api\ReportsController::revenue
- * @see app/Http/Controllers/Api/ReportsController.php:32
+ * @see app/Http/Controllers/Api/ReportsController.php:35
  * @route '/api/v1/reports/revenue'
  */
         revenueForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -141,7 +219,7 @@ revenue.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\Api\ReportsController::revenue
- * @see app/Http/Controllers/Api/ReportsController.php:32
+ * @see app/Http/Controllers/Api/ReportsController.php:35
  * @route '/api/v1/reports/revenue'
  */
         revenueForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -157,7 +235,7 @@ revenue.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     revenue.form = revenueForm
 /**
 * @see \App\Http\Controllers\Api\ReportsController::occupancyExport
- * @see app/Http/Controllers/Api/ReportsController.php:49
+ * @see app/Http/Controllers/Api/ReportsController.php:52
  * @route '/api/v1/reports/occupancy/export'
  */
 export const occupancyExport = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -172,7 +250,7 @@ occupancyExport.definition = {
 
 /**
 * @see \App\Http\Controllers\Api\ReportsController::occupancyExport
- * @see app/Http/Controllers/Api/ReportsController.php:49
+ * @see app/Http/Controllers/Api/ReportsController.php:52
  * @route '/api/v1/reports/occupancy/export'
  */
 occupancyExport.url = (options?: RouteQueryOptions) => {
@@ -181,7 +259,7 @@ occupancyExport.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Api\ReportsController::occupancyExport
- * @see app/Http/Controllers/Api/ReportsController.php:49
+ * @see app/Http/Controllers/Api/ReportsController.php:52
  * @route '/api/v1/reports/occupancy/export'
  */
 occupancyExport.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -190,7 +268,7 @@ occupancyExport.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => (
 })
 /**
 * @see \App\Http\Controllers\Api\ReportsController::occupancyExport
- * @see app/Http/Controllers/Api/ReportsController.php:49
+ * @see app/Http/Controllers/Api/ReportsController.php:52
  * @route '/api/v1/reports/occupancy/export'
  */
 occupancyExport.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -200,7 +278,7 @@ occupancyExport.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =>
 
     /**
 * @see \App\Http\Controllers\Api\ReportsController::occupancyExport
- * @see app/Http/Controllers/Api/ReportsController.php:49
+ * @see app/Http/Controllers/Api/ReportsController.php:52
  * @route '/api/v1/reports/occupancy/export'
  */
     const occupancyExportForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -210,7 +288,7 @@ occupancyExport.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =>
 
             /**
 * @see \App\Http\Controllers\Api\ReportsController::occupancyExport
- * @see app/Http/Controllers/Api/ReportsController.php:49
+ * @see app/Http/Controllers/Api/ReportsController.php:52
  * @route '/api/v1/reports/occupancy/export'
  */
         occupancyExportForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -219,7 +297,7 @@ occupancyExport.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =>
         })
             /**
 * @see \App\Http\Controllers\Api\ReportsController::occupancyExport
- * @see app/Http/Controllers/Api/ReportsController.php:49
+ * @see app/Http/Controllers/Api/ReportsController.php:52
  * @route '/api/v1/reports/occupancy/export'
  */
         occupancyExportForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -235,7 +313,7 @@ occupancyExport.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =>
     occupancyExport.form = occupancyExportForm
 /**
 * @see \App\Http\Controllers\Api\ReportsController::revenueExport
- * @see app/Http/Controllers/Api/ReportsController.php:81
+ * @see app/Http/Controllers/Api/ReportsController.php:84
  * @route '/api/v1/reports/revenue/export'
  */
 export const revenueExport = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -250,7 +328,7 @@ revenueExport.definition = {
 
 /**
 * @see \App\Http\Controllers\Api\ReportsController::revenueExport
- * @see app/Http/Controllers/Api/ReportsController.php:81
+ * @see app/Http/Controllers/Api/ReportsController.php:84
  * @route '/api/v1/reports/revenue/export'
  */
 revenueExport.url = (options?: RouteQueryOptions) => {
@@ -259,7 +337,7 @@ revenueExport.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Api\ReportsController::revenueExport
- * @see app/Http/Controllers/Api/ReportsController.php:81
+ * @see app/Http/Controllers/Api/ReportsController.php:84
  * @route '/api/v1/reports/revenue/export'
  */
 revenueExport.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -268,7 +346,7 @@ revenueExport.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\Api\ReportsController::revenueExport
- * @see app/Http/Controllers/Api/ReportsController.php:81
+ * @see app/Http/Controllers/Api/ReportsController.php:84
  * @route '/api/v1/reports/revenue/export'
  */
 revenueExport.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -278,7 +356,7 @@ revenueExport.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
 
     /**
 * @see \App\Http\Controllers\Api\ReportsController::revenueExport
- * @see app/Http/Controllers/Api/ReportsController.php:81
+ * @see app/Http/Controllers/Api/ReportsController.php:84
  * @route '/api/v1/reports/revenue/export'
  */
     const revenueExportForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -288,7 +366,7 @@ revenueExport.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
 
             /**
 * @see \App\Http\Controllers\Api\ReportsController::revenueExport
- * @see app/Http/Controllers/Api/ReportsController.php:81
+ * @see app/Http/Controllers/Api/ReportsController.php:84
  * @route '/api/v1/reports/revenue/export'
  */
         revenueExportForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -297,7 +375,7 @@ revenueExport.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
         })
             /**
 * @see \App\Http\Controllers\Api\ReportsController::revenueExport
- * @see app/Http/Controllers/Api/ReportsController.php:81
+ * @see app/Http/Controllers/Api/ReportsController.php:84
  * @route '/api/v1/reports/revenue/export'
  */
         revenueExportForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -311,6 +389,6 @@ revenueExport.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => (
         })
     
     revenueExport.form = revenueExportForm
-const ReportsController = { occupancy, revenue, occupancyExport, revenueExport }
+const ReportsController = { occupancy, cashierShift, revenue, occupancyExport, revenueExport }
 
 export default ReportsController

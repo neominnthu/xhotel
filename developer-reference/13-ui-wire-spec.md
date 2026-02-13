@@ -257,7 +257,7 @@ n
 ### Layout
 
 - Header: Settings
-- Body: Tabs (Cancellation Policies, Room Types, Rates)
+- Body: Tabs (Cancellation Policies, Room Types, Rates, Exchange Rates)
 
 ### Components
 
@@ -268,8 +268,8 @@ n
 
 ### Actions
 
-- Create and update cancellation policies, room types, and rates
-- Delete room types and rates with confirmation
+- Create and update cancellation policies, room types, rates, and exchange rates
+- Delete room types, rates, and exchange rates with confirmation
 - Show inline validation errors for overlapping active rate date ranges
 
 ## Notifications and Error States

@@ -19,6 +19,7 @@ class UpdateReservationRequest extends FormRequest
             'adults' => ['nullable', 'integer', 'min:1', 'max:10'],
             'children' => ['nullable', 'integer', 'min:0', 'max:10'],
             'room_id' => ['nullable', 'integer', 'exists:rooms,id'],
+            'special_requests' => ['nullable', 'string', 'max:500'],
         ];
     }
 

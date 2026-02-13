@@ -46,6 +46,11 @@ Each entry specifies endpoint, edge case, and expected outcome.
 - GET /reports/occupancy: to < from -> 422 RESERVATION_VALIDATION_ERROR
 - GET /reports/cashier-shift: cashier_id invalid -> 404 USER_NOT_FOUND
 
+## Cashier Shifts
+
+- POST /cashier-shifts/open: existing open shift -> 409 CASHIER_SHIFT_ALREADY_OPEN
+- POST /cashier-shifts/{id}/close: shift not open -> 409 CASHIER_SHIFT_NOT_OPEN
+
 ## Admin
 
 - POST /users: email already taken -> 409 USER_EMAIL_TAKEN

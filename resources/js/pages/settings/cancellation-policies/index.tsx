@@ -23,6 +23,7 @@ import {
 } from '@/routes/settings/cancellation-policies';
 import { index as roomTypesIndex } from '@/routes/settings/room-types';
 import { index as ratesIndex } from '@/routes/settings/rates';
+import { index as exchangeRatesIndex } from '@/routes/settings/exchange-rates';
 import { index as auditLogsIndex } from '@/routes/settings/audit-logs';
 import { t } from '@/lib/i18n';
 import type { BreadcrumbItem } from '@/types';
@@ -63,6 +64,7 @@ const tabs = [
     { label: t('settings.cancellationPolicies.tabs.cancellationPolicies'), href: cancellationPoliciesIndex().url },
     { label: t('settings.cancellationPolicies.tabs.roomTypes'), href: roomTypesIndex().url },
     { label: t('settings.cancellationPolicies.tabs.rates'), href: ratesIndex().url },
+    { label: t('settings.exchangeRates.title'), href: exchangeRatesIndex().url },
     { label: 'Audit Logs', href: auditLogsIndex().url },
     { label: 'System Updates', href: '/settings/updates' },
 ];
@@ -102,23 +104,17 @@ export default function CancellationPoliciesIndex({ roomTypes, policies }: Props
     };
 
     const submit = () => {
-        const payload = {
-            name: form.data.name,
-            room_type_id:
-                form.data.room_type_id === 'all'
-                    ? null
-                    : Number(form.data.room_type_id),
-            deadline_hours: Number(form.data.deadline_hours),
-            penalty_type: form.data.penalty_type,
-            penalty_amount: Number(form.data.penalty_amount),
-            penalty_percent: Number(form.data.penalty_percent),
-            is_active: form.data.is_active,
-        };
+        form.transform((data) => ({
+            ...data,
+            room_type_id: data.room_type_id !== 'all' ? Number(data.room_type_id) : null,
+            deadline_hours: Number(data.deadline_hours),
+            penalty_amount: Number(data.penalty_amount),
+            penalty_percent: Number(data.penalty_percent),
+        }));
 
         if (editingId) {
             form.clearErrors();
             form.patch(cancellationPoliciesUpdate(editingId).url, {
-                data: payload,
                 preserveScroll: true,
                 onSuccess: () => cancelEdit(),
             });
@@ -126,7 +122,6 @@ export default function CancellationPoliciesIndex({ roomTypes, policies }: Props
         }
 
         form.post(cancellationPoliciesStore().url, {
-            data: payload,
             preserveScroll: true,
             onSuccess: () => form.reset(),
         });
@@ -234,10 +229,14 @@ export default function CancellationPoliciesIndex({ roomTypes, policies }: Props
                                 }
                             >
                                 <SelectTrigger data-test="policy-room-type">
-                                    <SelectValue placeholder="All room types" />
+                                    <SelectValue
+                                        placeholder={t('settings.cancellationPolicies.form.placeholders.allRoomTypes')}
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">All room types</SelectItem>
+                                    <SelectItem value="all">
+                                        {t('settings.cancellationPolicies.form.placeholders.allRoomTypes')}
+                                    </SelectItem>
                                     {roomTypes.map((roomType) => (
                                         <SelectItem
                                             key={roomType.id}

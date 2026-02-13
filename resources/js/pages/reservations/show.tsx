@@ -1,11 +1,18 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AppLayout from '@/layouts/app-layout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import InputError from '@/components/input-error';
 import { dashboard } from '@/routes';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import {
     Dialog,
     DialogClose,
@@ -69,6 +76,11 @@ type Props = {
     };
 };
 
+type AvailableRoom = {
+    id: number;
+    number: string;
+};
+
 const breadcrumbs = (reservation: ReservationDetail): BreadcrumbItem[] => [
     { title: 'Dashboard', href: dashboard().url },
     { title: 'Reservations', href: '/reservations' },
@@ -101,16 +113,104 @@ export default function ReservationShow({ reservation, cancellation_preview }: P
         adults: reservation.adults.toString(),
         children: reservation.children.toString(),
         special_requests: reservation.special_requests ?? '',
+        room_id: reservation.room?.id ? String(reservation.room.id) : '',
     });
     const cancelForm = useForm({
         reason: '',
     });
     const canCancel = !['canceled', 'checked_out'].includes(reservation.status);
     const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+    const [availableRooms, setAvailableRooms] = useState<AvailableRoom[]>([]);
+    const [roomsLoading, setRoomsLoading] = useState(false);
+    const [roomsError, setRoomsError] = useState<string | null>(null);
+    const isCheckedIn = reservation.status === 'checked_in';
+    const roomOptions = availableRooms
+        .map((room) => ({
+            ...room,
+            label: `အခန်း ${room.number}`,
+        }))
+        .concat(
+            reservation.room &&
+                !availableRooms.some((room) => room.id === reservation.room?.id)
+                ? [
+                      {
+                          id: reservation.room.id,
+                          number: reservation.room.number,
+                          label: `အခန်း ${reservation.room.number} (လက်ရှိ)`,
+                      },
+                  ]
+                : [],
+        );
 
     const handleUpdate = () => {
-        patch(`/reservations/${reservation.id}`);
+        patch(`/reservations/${reservation.id}`, {
+            data: {
+                ...data,
+                room_id: data.room_id ? Number(data.room_id) : null,
+            },
+        });
     };
+
+    useEffect(() => {
+        if (isCheckedIn) {
+            setRoomsError(null);
+            return;
+        }
+
+        if (!data.check_in || !data.check_out) {
+            setAvailableRooms([]);
+            setRoomsError('ရွေးချယ်ထားသော နေ့စွဲ မပြည့်စုံသေးပါ။');
+            return;
+        }
+
+        const controller = new AbortController();
+
+        const fetchRooms = async () => {
+            setRoomsLoading(true);
+            setRoomsError(null);
+            setAvailableRooms([]);
+
+            const params = new URLSearchParams({
+                check_in_date: data.check_in,
+                check_out_date: data.check_out,
+            });
+
+            if (reservation.room_type?.id) {
+                params.append('room_type_id', String(reservation.room_type.id));
+            }
+
+            try {
+                const response = await fetch(
+                    `/api/v1/front-desk/rooms/available?${params.toString()}`,
+                    {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                        signal: controller.signal,
+                    },
+                );
+
+                if (!response.ok) {
+                    const payload = await response.json();
+                    setRoomsError(payload?.message ?? 'အခန်းများကို မယူနိုင်ပါ။');
+                    return;
+                }
+
+                const payload = await response.json();
+                setAvailableRooms(payload?.available_rooms ?? []);
+            } catch (error) {
+                if (!(error instanceof DOMException && error.name === 'AbortError')) {
+                    setRoomsError('အခန်းများကို မယူနိုင်ပါ။');
+                }
+            } finally {
+                setRoomsLoading(false);
+            }
+        };
+
+        fetchRooms();
+
+        return () => controller.abort();
+    }, [data.check_in, data.check_out, isCheckedIn, reservation.room_type?.id]);
 
     const handleCancel = () => {
         cancelForm.post(`/reservations/${reservation.id}/cancel`, {
@@ -261,8 +361,13 @@ export default function ReservationShow({ reservation, cancellation_preview }: P
 
                 <div className="rounded-xl border border-border bg-card p-4">
                     <h2 className="text-sm font-semibold text-muted-foreground">
-                        Edit Stay Details
+                        တည်းခိုမှု ပြင်ဆင်ရန်
                     </h2>
+                    {isCheckedIn && (
+                        <p className="mt-2 text-sm text-muted-foreground">
+                            Check-in ပြီးထားသော တည်းခိုမှုများတွင် အခန်း/နေ့စွဲ မပြောင်းနိုင်ပါ။
+                        </p>
+                    )}
                     <div className="mt-4 grid gap-4 sm:grid-cols-2">
                         <div className="space-y-2">
                             <Input
@@ -271,6 +376,7 @@ export default function ReservationShow({ reservation, cancellation_preview }: P
                                 onChange={(event) =>
                                     setData('check_in', event.target.value)
                                 }
+                                disabled={isCheckedIn}
                             />
                             <InputError message={errors.check_in} />
                         </div>
@@ -281,6 +387,7 @@ export default function ReservationShow({ reservation, cancellation_preview }: P
                                 onChange={(event) =>
                                     setData('check_out', event.target.value)
                                 }
+                                disabled={isCheckedIn}
                             />
                             <InputError message={errors.check_out} />
                         </div>
@@ -305,6 +412,47 @@ export default function ReservationShow({ reservation, cancellation_preview }: P
                                 }
                             />
                             <InputError message={errors.children} />
+                        </div>
+                        <div className="space-y-2 sm:col-span-2">
+                            <Select
+                                value={data.room_id || 'unassigned'}
+                                onValueChange={(value) =>
+                                    setData(
+                                        'room_id',
+                                        value === 'unassigned' ? '' : value,
+                                    )
+                                }
+                                disabled={isCheckedIn || roomsLoading}
+                            >
+                                <SelectTrigger id="reservation-room">
+                                    <SelectValue
+                                        placeholder={
+                                            roomsLoading
+                                                ? 'အခန်းများ ရယူနေသည်...'
+                                                : 'အခန်းရွေးပါ'
+                                        }
+                                    />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="unassigned">
+                                        အခန်း မသတ်မှတ်ထားပါ
+                                    </SelectItem>
+                                    {roomOptions.map((room) => (
+                                        <SelectItem
+                                            key={room.id}
+                                            value={String(room.id)}
+                                        >
+                                            {room.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {roomsError && (
+                                <p className="text-xs text-destructive">
+                                    {roomsError}
+                                </p>
+                            )}
+                            <InputError message={errors.room_id} />
                         </div>
                         <div className="space-y-2 sm:col-span-2">
                             <Input

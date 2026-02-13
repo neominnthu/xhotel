@@ -272,4 +272,76 @@ class ReservationLifecycleTest extends TestCase
         $response->assertStatus(409);
         $response->assertJsonFragment(['code' => 'RESERVATION_ROOM_UNAVAILABLE']);
     }
+
+    public function test_reservation_update_allows_room_and_request_changes(): void
+    {
+        $property = Property::create([
+            'name' => 'XHotel Yangon',
+            'timezone' => 'Asia/Yangon',
+            'default_currency' => 'MMK',
+            'default_language' => 'my',
+        ]);
+
+        $roomType = RoomType::create([
+            'name' => 'Deluxe Room',
+            'property_id' => $property->id,
+            'capacity' => 2,
+            'base_rate' => 150000,
+        ]);
+
+        $roomOne = Room::create([
+            'number' => '201',
+            'room_type_id' => $roomType->id,
+            'property_id' => $property->id,
+            'floor' => 2,
+            'is_active' => true,
+            'status' => 'available',
+        ]);
+
+        $roomTwo = Room::create([
+            'number' => '202',
+            'room_type_id' => $roomType->id,
+            'property_id' => $property->id,
+            'floor' => 2,
+            'is_active' => true,
+            'status' => 'available',
+        ]);
+
+        $guest = Guest::create([
+            'name' => 'Update Guest',
+            'email' => 'update@example.com',
+        ]);
+
+        $user = User::factory()->create([
+            'role' => 'front_desk',
+            'property_id' => $property->id,
+        ]);
+
+        $reservation = Reservation::create([
+            'property_id' => $property->id,
+            'guest_id' => $guest->id,
+            'code' => 'RSV-201',
+            'check_in' => now()->addDays(2)->toDateString(),
+            'check_out' => now()->addDays(4)->toDateString(),
+            'room_type_id' => $roomType->id,
+            'room_id' => $roomOne->id,
+            'adults' => 2,
+            'status' => 'confirmed',
+            'source' => 'walk_in',
+        ]);
+
+        $response = $this->actingAs($user)->patchJson(
+            "/api/v1/reservations/{$reservation->id}",
+            [
+                'room_id' => $roomTwo->id,
+                'special_requests' => 'Late arrival',
+            ]
+        );
+
+        $response->assertOk();
+        $reservation->refresh();
+
+        $this->assertEquals($roomTwo->id, $reservation->room_id);
+        $this->assertEquals('Late arrival', $reservation->special_requests);
+    }
 }

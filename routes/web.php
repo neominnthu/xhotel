@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BillingReportsController;
+use App\Http\Controllers\CashierShiftPageController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Folios\FolioPageController;
 use App\Http\Controllers\FrontDesk\CheckInPageController;
@@ -10,11 +11,14 @@ use App\Http\Controllers\Guests\GuestPageController;
 use App\Http\Controllers\Housekeeping\HousekeepingAuditPageController;
 use App\Http\Controllers\Housekeeping\HousekeepingPageController;
 use App\Http\Controllers\Housekeeping\RoomHistoryPageController;
+use App\Http\Controllers\NightAuditPageController;
 use App\Http\Controllers\ReportsPageController;
 use App\Http\Controllers\Reservations\ReservationImportPageController;
 use App\Http\Controllers\Reservations\ReservationPageController;
+use App\Http\Controllers\RoomInventoryPageController;
 use App\Http\Controllers\Settings\AuditLogPageController;
 use App\Http\Controllers\Settings\CancellationPolicyPageController;
+use App\Http\Controllers\Settings\ExchangeRatePageController;
 use App\Http\Controllers\Settings\RatePageController;
 use App\Http\Controllers\Settings\RoomTypePageController;
 use App\Http\Controllers\Settings\UpdatePageController;
@@ -177,6 +181,10 @@ Route::get('reports', [ReportsPageController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('reports.index');
 
+Route::get('night-audit', [NightAuditPageController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('night-audit.index');
+
 Route::get('reports/export', [ReportsPageController::class, 'export'])
     ->middleware(['auth', 'verified'])
     ->name('reports.export');
@@ -184,6 +192,18 @@ Route::get('reports/export', [ReportsPageController::class, 'export'])
 Route::get('reports/export-revenue', [ReportsPageController::class, 'exportRevenue'])
     ->middleware(['auth', 'verified'])
     ->name('reports.export.revenue');
+
+Route::get('cashier-shifts', [CashierShiftPageController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('cashier-shifts.index');
+
+Route::post('cashier-shifts/open', [CashierShiftPageController::class, 'open'])
+    ->middleware(['auth', 'verified'])
+    ->name('cashier-shifts.open');
+
+Route::post('cashier-shifts/{cashierShift}/close', [CashierShiftPageController::class, 'close'])
+    ->middleware(['auth', 'verified'])
+    ->name('cashier-shifts.close');
 
 Route::get('settings/cancellation-policies', [CancellationPolicyPageController::class, 'index'])
     ->middleware(['auth', 'verified'])
@@ -260,6 +280,22 @@ Route::patch('settings/rates/{rate}', [RatePageController::class, 'update'])
 Route::delete('settings/rates/{rate}', [RatePageController::class, 'destroy'])
     ->middleware(['auth', 'verified'])
     ->name('settings.rates.destroy');
+
+Route::get('settings/exchange-rates', [ExchangeRatePageController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('settings.exchange-rates.index');
+
+Route::post('settings/exchange-rates', [ExchangeRatePageController::class, 'store'])
+    ->middleware(['auth', 'verified'])
+    ->name('settings.exchange-rates.store');
+
+Route::patch('settings/exchange-rates/{exchangeRate}', [ExchangeRatePageController::class, 'update'])
+    ->middleware(['auth', 'verified'])
+    ->name('settings.exchange-rates.update');
+
+Route::delete('settings/exchange-rates/{exchangeRate}', [ExchangeRatePageController::class, 'destroy'])
+    ->middleware(['auth', 'verified'])
+    ->name('settings.exchange-rates.destroy');
 
 Route::get('reservations/{reservation}', function (Reservation $reservation) {
     Gate::authorize('view', $reservation);
@@ -348,6 +384,10 @@ Route::get('calendar', function () {
         ]),
     ]);
 })->middleware(['auth', 'verified'])->name('calendar.index');
+
+Route::get('room-inventory', [RoomInventoryPageController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('room-inventory.index');
 
 Route::get('folios/{folio}', function (Folio $folio) {
     $folio->load([
@@ -670,6 +710,8 @@ Route::get('housekeeping/performance', [HousekeepingPerformancePageController::c
     ->name('housekeeping.performance');
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\PermissionController;
+use App\Http\Controllers\Admin\RoleController;
 
 Route::get('admin', [AdminController::class, 'index'])
     ->middleware(['auth', 'verified'])
@@ -698,5 +740,61 @@ Route::patch('admin/users/{user}', [AdminController::class, 'update'])
 Route::delete('admin/users/{user}', [AdminController::class, 'destroy'])
     ->middleware(['auth', 'verified'])
     ->name('admin.users.destroy');
+
+Route::get('admin/roles', [RoleController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('admin.roles.index');
+
+Route::get('admin/roles/create', [RoleController::class, 'create'])
+    ->middleware(['auth', 'verified'])
+    ->name('admin.roles.create');
+
+Route::post('admin/roles', [RoleController::class, 'store'])
+    ->middleware(['auth', 'verified'])
+    ->name('admin.roles.store');
+
+Route::get('admin/roles/{role}', [RoleController::class, 'show'])
+    ->middleware(['auth', 'verified'])
+    ->name('admin.roles.show');
+
+Route::get('admin/roles/{role}/edit', [RoleController::class, 'edit'])
+    ->middleware(['auth', 'verified'])
+    ->name('admin.roles.edit');
+
+Route::patch('admin/roles/{role}', [RoleController::class, 'update'])
+    ->middleware(['auth', 'verified'])
+    ->name('admin.roles.update');
+
+Route::delete('admin/roles/{role}', [RoleController::class, 'destroy'])
+    ->middleware(['auth', 'verified'])
+    ->name('admin.roles.destroy');
+
+Route::get('admin/permissions', [PermissionController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('admin.permissions.index');
+
+Route::get('admin/permissions/create', [PermissionController::class, 'create'])
+    ->middleware(['auth', 'verified'])
+    ->name('admin.permissions.create');
+
+Route::post('admin/permissions', [PermissionController::class, 'store'])
+    ->middleware(['auth', 'verified'])
+    ->name('admin.permissions.store');
+
+Route::get('admin/permissions/{permission}', [PermissionController::class, 'show'])
+    ->middleware(['auth', 'verified'])
+    ->name('admin.permissions.show');
+
+Route::get('admin/permissions/{permission}/edit', [PermissionController::class, 'edit'])
+    ->middleware(['auth', 'verified'])
+    ->name('admin.permissions.edit');
+
+Route::patch('admin/permissions/{permission}', [PermissionController::class, 'update'])
+    ->middleware(['auth', 'verified'])
+    ->name('admin.permissions.update');
+
+Route::delete('admin/permissions/{permission}', [PermissionController::class, 'destroy'])
+    ->middleware(['auth', 'verified'])
+    ->name('admin.permissions.destroy');
 
 require __DIR__.'/settings.php';

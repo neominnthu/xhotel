@@ -3,7 +3,7 @@ import charges from './charges'
 import payments from './payments'
 import refunds from './refunds'
 /**
- * @see routes/web.php:352
+ * @see routes/web.php:392
  * @route '/folios/{folio}'
  */
 export const show = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -17,7 +17,7 @@ show.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
- * @see routes/web.php:352
+ * @see routes/web.php:392
  * @route '/folios/{folio}'
  */
 show.url = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ show.url = (args: { folio: number | { id: number } } | [folio: number | { id: nu
 }
 
 /**
- * @see routes/web.php:352
+ * @see routes/web.php:392
  * @route '/folios/{folio}'
  */
 show.get = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -57,7 +57,7 @@ show.get = (args: { folio: number | { id: number } } | [folio: number | { id: nu
     method: 'get',
 })
 /**
- * @see routes/web.php:352
+ * @see routes/web.php:392
  * @route '/folios/{folio}'
  */
 show.head = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -66,7 +66,7 @@ show.head = (args: { folio: number | { id: number } } | [folio: number | { id: n
 })
 
     /**
- * @see routes/web.php:352
+ * @see routes/web.php:392
  * @route '/folios/{folio}'
  */
     const showForm = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -75,7 +75,7 @@ show.head = (args: { folio: number | { id: number } } | [folio: number | { id: n
     })
 
             /**
- * @see routes/web.php:352
+ * @see routes/web.php:392
  * @route '/folios/{folio}'
  */
         showForm.get = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -83,7 +83,7 @@ show.head = (args: { folio: number | { id: number } } | [folio: number | { id: n
             method: 'get',
         })
             /**
- * @see routes/web.php:352
+ * @see routes/web.php:392
  * @route '/folios/{folio}'
  */
         showForm.head = (args: { folio: number | { id: number } } | [folio: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

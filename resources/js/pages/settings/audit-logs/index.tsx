@@ -178,7 +178,7 @@ export default function AuditLogsIndex({ logs, filters, can_export }: Props) {
                             </Button>
                             {can_export && (
                                 <Link
-                                    href={auditLogsExport().url({ query: filterParams })}
+                                    href={auditLogsExport.url({ query: filterParams })}
                                     className="text-sm text-primary hover:underline"
                                 >
                                     Export CSV

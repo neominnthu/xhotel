@@ -31,4 +31,13 @@ class StoreCancellationPolicyRequest extends FormRequest
             'is_active' => ['nullable', 'boolean'],
         ];
     }
+
+    protected function prepareForValidation(): void
+    {
+        $roomTypeId = $this->input('room_type_id');
+
+        if ($roomTypeId === '' || $roomTypeId === 'all') {
+            $this->merge(['room_type_id' => null]);
+        }
+    }
 }

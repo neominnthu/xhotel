@@ -12,7 +12,10 @@ use Illuminate\Support\Facades\DB;
 
 class FolioService
 {
-    public function __construct(public AuditLogService $auditLogService) {}
+    public function __construct(
+        public AuditLogService $auditLogService,
+        public ExchangeRateService $exchangeRateService
+    ) {}
 
     public function addCharge(Folio $folio, array $data, User $actor): Charge
     {
@@ -62,6 +65,15 @@ class FolioService
 
         $exchangeRate = $data['exchange_rate'] ?? null;
         $currency = $data['currency'];
+
+        if ($currency !== $folio->currency && $exchangeRate === null) {
+            $exchangeRate = $this->exchangeRateService->resolveRate(
+                $folio->reservation?->property_id ?? $actor->property_id,
+                $folio->currency,
+                $currency,
+                now(),
+            );
+        }
 
         if ($currency !== $folio->currency && $exchangeRate === null) {
             throw new HttpResponseException(response()->json([
@@ -121,6 +133,15 @@ class FolioService
     {
         $exchangeRate = $data['exchange_rate'] ?? null;
         $currency = $data['currency'];
+
+        if ($currency !== $folio->currency && $exchangeRate === null) {
+            $exchangeRate = $this->exchangeRateService->resolveRate(
+                $folio->reservation?->property_id ?? $actor->property_id,
+                $folio->currency,
+                $currency,
+                now(),
+            );
+        }
 
         if ($currency !== $folio->currency && $exchangeRate === null) {
             throw new HttpResponseException(response()->json([

@@ -1,5 +1,5 @@
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import AppLayout from '@/layouts/app-layout';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -22,6 +22,7 @@ import {
 } from '@/routes/settings/rates';
 import { index as cancellationPoliciesIndex } from '@/routes/settings/cancellation-policies';
 import { index as roomTypesIndex } from '@/routes/settings/room-types';
+import { index as exchangeRatesIndex } from '@/routes/settings/exchange-rates';
 import { index as auditLogsIndex } from '@/routes/settings/audit-logs';
 import { t } from '@/lib/i18n';
 import type { BreadcrumbItem } from '@/types';
@@ -62,6 +63,7 @@ const tabs = [
     { label: t('settings.cancellationPolicies.tabs.cancellationPolicies'), href: cancellationPoliciesIndex().url },
     { label: t('settings.roomTypes.title'), href: roomTypesIndex().url },
     { label: t('settings.rates.title'), href: ratesIndex().url },
+    { label: t('settings.exchangeRates.title'), href: exchangeRatesIndex().url },
     { label: 'Audit Logs', href: auditLogsIndex().url },
     { label: 'System Updates', href: '/settings/updates' },
 ];
@@ -92,8 +94,9 @@ export default function RatesIndex({ roomTypes, rates }: Props) {
     const { flash } = usePage<{ flash: { success?: string; error?: string } }>()
         .props;
     const [editingId, setEditingId] = useState<number | null>(null);
+    const [rateRows, setRateRows] = useState<RateRow[]>(rates);
     const form = useForm({
-        room_type_id: '',
+        room_type_id: roomTypes[0]?.id ? roomTypes[0].id.toString() : '',
         name: '',
         type: 'base',
         start_date: '',
@@ -108,7 +111,15 @@ export default function RatesIndex({ roomTypes, rates }: Props) {
         is_active: true,
     });
 
-    const currentRates = useMemo(() => rates, [rates]);
+    useEffect(() => {
+        setRateRows(rates);
+    }, [rates]);
+
+    useEffect(() => {
+        if (!form.data.room_type_id && roomTypes.length > 0) {
+            form.setData('room_type_id', roomTypes[0].id.toString());
+        }
+    }, [form.data.room_type_id, roomTypes]);
 
     const toggleDay = (day: number) => {
         const next = form.data.days_of_week.includes(day)
@@ -142,46 +153,51 @@ export default function RatesIndex({ roomTypes, rates }: Props) {
     };
 
     const submit = () => {
-        const payload = {
-            room_type_id: Number(form.data.room_type_id),
-            name: form.data.name,
-            type: form.data.type,
-            start_date: form.data.start_date,
-            end_date: form.data.end_date,
-            rate: Number(form.data.rate),
-            min_stay: Number(form.data.min_stay),
-            days_of_week: form.data.days_of_week.length
-                ? form.data.days_of_week
+        const resolvedRoomTypeId =
+            form.data.room_type_id || roomTypes[0]?.id?.toString() || '';
+
+        if (!resolvedRoomTypeId) {
+            form.setError('room_type_id', 'Room type is required.');
+            return;
+        }
+
+        form.transform((data) => ({
+            ...data,
+            room_type_id: Number(resolvedRoomTypeId),
+            rate: Number(data.rate),
+            min_stay: Number(data.min_stay),
+            days_of_week: data.days_of_week.length ? data.days_of_week : null,
+            length_of_stay_min: data.length_of_stay_min
+                ? Number(data.length_of_stay_min)
                 : null,
-            length_of_stay_min: form.data.length_of_stay_min
-                ? Number(form.data.length_of_stay_min)
+            length_of_stay_max: data.length_of_stay_max
+                ? Number(data.length_of_stay_max)
                 : null,
-            length_of_stay_max: form.data.length_of_stay_max
-                ? Number(form.data.length_of_stay_max)
+            adjustment_type: data.adjustment_type === 'none' ? null : data.adjustment_type,
+            adjustment_value: data.adjustment_value
+                ? Number(data.adjustment_value)
                 : null,
-            adjustment_type:
-                form.data.adjustment_type === 'none'
-                    ? null
-                    : form.data.adjustment_type,
-            adjustment_value: form.data.adjustment_value
-                ? Number(form.data.adjustment_value)
-                : null,
-            is_active: form.data.is_active,
-        };
+        }));
 
         if (editingId) {
             form.patch(ratesUpdate(editingId).url, {
-                data: payload,
+                preserveState: false,
                 preserveScroll: true,
-                onSuccess: () => cancelEdit(),
+                onSuccess: () => {
+                    cancelEdit();
+                    router.reload({ only: ['rates'], preserveScroll: true });
+                },
             });
             return;
         }
 
         form.post(ratesStore().url, {
-            data: payload,
+            preserveState: false,
             preserveScroll: true,
-            onSuccess: () => form.reset(),
+            onSuccess: () => {
+                form.reset();
+                router.reload({ only: ['rates'], preserveScroll: true });
+            },
         });
     };
 
@@ -190,8 +206,13 @@ export default function RatesIndex({ roomTypes, rates }: Props) {
             return;
         }
 
+        setRateRows((previous) => previous.filter((rate) => rate.id !== rateId));
+
         router.delete(ratesDestroy(rateId).url, {
             preserveScroll: true,
+            onFinish: () => {
+                router.reload({ only: ['rates'], preserveScroll: true });
+            },
         });
     };
 
@@ -466,7 +487,7 @@ export default function RatesIndex({ roomTypes, rates }: Props) {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-border">
-                                {currentRates.length === 0 ? (
+                                {rateRows.length === 0 ? (
                                     <tr>
                                         <td
                                             colSpan={6}
@@ -476,7 +497,7 @@ export default function RatesIndex({ roomTypes, rates }: Props) {
                                         </td>
                                     </tr>
                                 ) : (
-                                    currentRates.map((rate) => (
+                                    rateRows.map((rate) => (
                                         <tr key={rate.id}>
                                             <td className="px-4 py-3">{rate.name}</td>
                                             <td className="px-4 py-3">
@@ -505,6 +526,7 @@ export default function RatesIndex({ roomTypes, rates }: Props) {
                                                     <Button
                                                         type="button"
                                                         variant="destructive"
+                                                        data-test="rate-delete"
                                                         onClick={() => deleteRate(rate.id)}
                                                     >
                                                         ဖျက်ရန်

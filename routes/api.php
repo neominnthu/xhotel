@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AvailabilityController;
 use App\Http\Controllers\Api\AvailabilityHoldController;
 use App\Http\Controllers\Api\CancellationPolicyController;
+use App\Http\Controllers\Api\CashierShiftController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\FolioController;
 use App\Http\Controllers\Api\FrontDeskController;
@@ -87,9 +88,16 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::get('reports/occupancy', [ReportsController::class, 'occupancy']);
+        Route::get('reports/cashier-shift', [ReportsController::class, 'cashierShift']);
         Route::get('reports/revenue', [ReportsController::class, 'revenue']);
         Route::get('reports/occupancy/export', [ReportsController::class, 'occupancyExport']);
         Route::get('reports/revenue/export', [ReportsController::class, 'revenueExport']);
+
+        Route::prefix('cashier-shifts')->group(function () {
+            Route::post('open', [CashierShiftController::class, 'open']);
+            Route::post('{cashierShift}/close', [CashierShiftController::class, 'close']);
+            Route::get('current', [CashierShiftController::class, 'current']);
+        });
 
         Route::prefix('system')->group(function () {
             Route::post('updates/check', [SystemUpdateController::class, 'check']);

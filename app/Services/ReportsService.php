@@ -2,10 +2,14 @@
 
 namespace App\Services;
 
+use App\Models\CashierShift;
 use App\Models\Folio;
+use App\Models\Payment;
+use App\Models\Refund;
 use App\Models\ReportDailyKpi;
 use App\Models\Reservation;
 use App\Models\Room;
+use App\Models\User;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -128,6 +132,61 @@ class ReportsService
                 ],
             ];
         });
+    }
+
+    public function cashierShiftReport(CarbonInterface $date, User $cashier): array
+    {
+        $propertyId = $cashier->property_id;
+        $start = $date->copy()->startOfDay();
+        $end = $date->copy()->endOfDay();
+
+        $shifts = CashierShift::query()
+            ->when($propertyId, fn ($query) => $query->where('property_id', $propertyId))
+            ->where('cashier_id', $cashier->id)
+            ->whereBetween('opened_at', [$start, $end])
+            ->get();
+
+        if ($shifts->isNotEmpty()) {
+            return [
+                'total_cash' => (int) $shifts->sum('total_cash'),
+                'total_card' => (int) $shifts->sum('total_card'),
+            ];
+        }
+
+        $cash = (int) Payment::query()
+            ->when($propertyId, fn ($query) => $query->whereHas('folio.reservation', fn ($reservationQuery) => $reservationQuery->where('property_id', $propertyId)))
+            ->where('created_by', $cashier->id)
+            ->where('method', 'cash')
+            ->whereBetween('received_at', [$start, $end])
+            ->sum('amount');
+
+        $card = (int) Payment::query()
+            ->when($propertyId, fn ($query) => $query->whereHas('folio.reservation', fn ($reservationQuery) => $reservationQuery->where('property_id', $propertyId)))
+            ->where('created_by', $cashier->id)
+            ->where('method', 'card')
+            ->whereBetween('received_at', [$start, $end])
+            ->sum('amount');
+
+        $cashRefunds = (int) Refund::query()
+            ->when($propertyId, fn ($query) => $query->whereHas('folio.reservation', fn ($reservationQuery) => $reservationQuery->where('property_id', $propertyId)))
+            ->where('approved_by', $cashier->id)
+            ->where('method', 'cash')
+            ->where('status', 'approved')
+            ->whereBetween('refunded_at', [$start, $end])
+            ->sum('amount');
+
+        $cardRefunds = (int) Refund::query()
+            ->when($propertyId, fn ($query) => $query->whereHas('folio.reservation', fn ($reservationQuery) => $reservationQuery->where('property_id', $propertyId)))
+            ->where('approved_by', $cashier->id)
+            ->where('method', 'card')
+            ->where('status', 'approved')
+            ->whereBetween('refunded_at', [$start, $end])
+            ->sum('amount');
+
+        return [
+            'total_cash' => $cash - $cashRefunds,
+            'total_card' => $card - $cardRefunds,
+        ];
     }
 
     private function roomNightsExpression(): string

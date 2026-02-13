@@ -38,6 +38,20 @@ class GuestPageController extends Controller
             });
         }
 
+        $vipStatus = $request->input('vip_status');
+        if (in_array($vipStatus, ['vip', 'vvip'], true)) {
+            $query->where('vip_status', $vipStatus);
+        }
+
+        if ($request->boolean('blacklisted')) {
+            $query->where('is_blacklisted', true);
+        }
+
+        $minStays = (int) $request->input('min_stays', 0);
+        if ($minStays > 0) {
+            $query->where('total_stays', '>=', $minStays);
+        }
+
         $guests = $query->orderBy('name')
             ->paginate(20)
             ->through(function ($guest) {
@@ -52,6 +66,7 @@ class GuestPageController extends Controller
                     'date_of_birth' => $guest->date_of_birth?->format('Y-m-d'),
                     'nationality' => $guest->nationality,
                     'vip_status' => $guest->vip_status,
+                    'is_blacklisted' => $guest->is_blacklisted,
                     'total_stays' => $guest->total_stays,
                     'last_visit' => $guest->last_visit_at?->format('M j, Y'),
                     'total_spent' => $guest->total_spent,
@@ -61,7 +76,7 @@ class GuestPageController extends Controller
 
         return Inertia::render('guests/index', [
             'guests' => $guests,
-            'filters' => $request->only(['search']),
+            'filters' => $request->only(['search', 'vip_status', 'blacklisted', 'min_stays']),
         ]);
     }
 
@@ -73,7 +88,7 @@ class GuestPageController extends Controller
             'reservations' => function ($query) {
                 $query->with(['roomType', 'room', 'stay', 'folios.charges', 'folios.payments'])
                     ->orderBy('check_in', 'desc');
-            }
+            },
         ]);
 
         $mergeCandidates = Guest::query()
@@ -118,6 +133,7 @@ class GuestPageController extends Controller
             'reservations' => $guest->reservations->map(function ($reservation) {
                 $folio = $reservation->folios->first();
                 $folioTotal = $reservation->folios->sum('total');
+
                 return [
                     'id' => $reservation->id,
                     'code' => $reservation->code,

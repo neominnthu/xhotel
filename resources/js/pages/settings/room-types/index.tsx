@@ -15,6 +15,7 @@ import {
 } from '@/routes/settings/room-types';
 import { index as cancellationPoliciesIndex } from '@/routes/settings/cancellation-policies';
 import { index as ratesIndex } from '@/routes/settings/rates';
+import { index as exchangeRatesIndex } from '@/routes/settings/exchange-rates';
 import { index as auditLogsIndex } from '@/routes/settings/audit-logs';
 import { t } from '@/lib/i18n';
 import type { BreadcrumbItem } from '@/types';
@@ -42,6 +43,7 @@ const tabs = [
     { label: t('settings.cancellationPolicies.tabs.cancellationPolicies'), href: cancellationPoliciesIndex().url },
     { label: t('settings.roomTypes.title'), href: roomTypesIndex().url },
     { label: t('settings.rates.title'), href: ratesIndex().url },
+    { label: t('settings.exchangeRates.title'), href: exchangeRatesIndex().url },
     { label: 'Audit Logs', href: auditLogsIndex().url },
     { label: 'System Updates', href: '/settings/updates' },
 ];
@@ -94,16 +96,24 @@ export default function RoomTypesIndex({ roomTypes }: Props) {
         if (editingId) {
             form.patch(roomTypesUpdate(editingId).url, {
                 data: payload,
+                preserveState: false,
                 preserveScroll: true,
-                onSuccess: () => cancelEdit(),
+                onSuccess: () => {
+                    cancelEdit();
+                    router.reload({ only: ['roomTypes'], preserveScroll: true });
+                },
             });
             return;
         }
 
         form.post(roomTypesStore().url, {
             data: payload,
+            preserveState: false,
             preserveScroll: true,
-            onSuccess: () => form.reset(),
+            onSuccess: () => {
+                form.reset();
+                router.reload({ only: ['roomTypes'], preserveScroll: true });
+            },
         });
     };
 
@@ -114,6 +124,9 @@ export default function RoomTypesIndex({ roomTypes }: Props) {
 
         router.delete(roomTypesDestroy(roomTypeId).url, {
             preserveScroll: true,
+            onFinish: () => {
+                router.reload({ only: ['roomTypes'], preserveScroll: true });
+            },
         });
     };
 

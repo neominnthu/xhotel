@@ -241,7 +241,7 @@ storeRefund.post = (args: { folio: number | { id: number } } | [folio: number | 
  * @see app/Http/Controllers/Folios/FolioPageController.php:58
  * @route '/refunds/{refund}/approve'
  */
-export const approveRefund = (args: { refund: string | number | { id: string | number } } | [refund: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+export const approveRefund = (args: { refund: number | { id: number } } | [refund: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: approveRefund.url(args, options),
     method: 'post',
 })
@@ -256,7 +256,7 @@ approveRefund.definition = {
  * @see app/Http/Controllers/Folios/FolioPageController.php:58
  * @route '/refunds/{refund}/approve'
  */
-approveRefund.url = (args: { refund: string | number | { id: string | number } } | [refund: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+approveRefund.url = (args: { refund: number | { id: number } } | [refund: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { refund: args }
     }
@@ -289,7 +289,7 @@ approveRefund.url = (args: { refund: string | number | { id: string | number } }
  * @see app/Http/Controllers/Folios/FolioPageController.php:58
  * @route '/refunds/{refund}/approve'
  */
-approveRefund.post = (args: { refund: string | number | { id: string | number } } | [refund: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+approveRefund.post = (args: { refund: number | { id: number } } | [refund: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: approveRefund.url(args, options),
     method: 'post',
 })
@@ -299,7 +299,7 @@ approveRefund.post = (args: { refund: string | number | { id: string | number } 
  * @see app/Http/Controllers/Folios/FolioPageController.php:58
  * @route '/refunds/{refund}/approve'
  */
-    const approveRefundForm = (args: { refund: string | number | { id: string | number } } | [refund: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    const approveRefundForm = (args: { refund: number | { id: number } } | [refund: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
         action: approveRefund.url(args, options),
         method: 'post',
     })
@@ -309,7 +309,7 @@ approveRefund.post = (args: { refund: string | number | { id: string | number } 
  * @see app/Http/Controllers/Folios/FolioPageController.php:58
  * @route '/refunds/{refund}/approve'
  */
-        approveRefundForm.post = (args: { refund: string | number | { id: string | number } } | [refund: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        approveRefundForm.post = (args: { refund: number | { id: number } } | [refund: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
             action: approveRefund.url(args, options),
             method: 'post',
         })

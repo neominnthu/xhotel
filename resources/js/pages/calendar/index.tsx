@@ -213,21 +213,23 @@ export default function CalendarIndex({ roomTypes }: Props) {
 
                     <div className="flex items-center gap-2">
                         <Select
-                            value={selectedRoomType?.toString() || ''}
-                            onValueChange={(value) => setSelectedRoomType(value ? parseInt(value) : null)}
+                            value={selectedRoomType ? selectedRoomType.toString() : 'all'}
+                            onValueChange={(value) =>
+                                setSelectedRoomType(value === 'all' ? null : parseInt(value))
+                            }
                         >
                             <SelectTrigger className="w-48">
                                 <SelectValue placeholder="All Room Types" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="">All Room Types</SelectItem>
+                                <SelectItem value="all">All Room Types</SelectItem>
                                 {calendarData?.data.map((roomType) => (
                                     <SelectItem key={roomType.id} value={roomType.id.toString()}>
-                                        {roomType.name.en || roomType.name.mm}
+                                        {roomType.name.my || roomType.name.en}
                                     </SelectItem>
                                 )) || roomTypes.map((roomType) => (
                                     <SelectItem key={roomType.id} value={roomType.id.toString()}>
-                                        {roomType.name.en || roomType.name.mm}
+                                        {roomType.name.my || roomType.name.en}
                                     </SelectItem>
                                 ))}
                             </SelectContent>

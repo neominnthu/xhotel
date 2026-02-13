@@ -1,4 +1,4 @@
-import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
 import AppLayout from '@/layouts/app-layout';
 import { Badge } from '@/components/ui/badge';
@@ -39,6 +39,7 @@ type Guest = {
     date_of_birth?: string;
     nationality?: string;
     vip_status?: string;
+    is_blacklisted?: boolean;
     total_stays: number;
     last_visit?: string;
     total_spent: number;
@@ -56,6 +57,9 @@ type Props = {
     };
     filters: {
         search?: string;
+        vip_status?: string;
+        blacklisted?: string | number;
+        min_stays?: string | number;
     };
 };
 
@@ -81,6 +85,9 @@ function formatCurrency(amount: number): string {
 export default function GuestsIndex({ guests, filters }: Props) {
     const { flash } = usePage<{ flash?: { success?: string; error?: string } }>().props;
     const [search, setSearch] = useState(filters.search || '');
+    const [vipStatus, setVipStatus] = useState(filters.vip_status || '');
+    const [blacklistedOnly, setBlacklistedOnly] = useState(Boolean(filters.blacklisted));
+    const [minStays, setMinStays] = useState(filters.min_stays?.toString() || '');
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const form = useForm({
         first_name: '',
@@ -112,14 +119,18 @@ export default function GuestsIndex({ guests, filters }: Props) {
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
-        // Update URL with search parameter
-        const url = new URL(window.location.href);
-        if (search) {
-            url.searchParams.set('search', search);
-        } else {
-            url.searchParams.delete('search');
-        }
-        window.location.href = url.toString();
+        router.get(
+            '/guests',
+            {
+                search: search || undefined,
+                vip_status: vipStatus || undefined,
+                blacklisted: blacklistedOnly ? 1 : undefined,
+                min_stays: minStays ? Number(minStays) : undefined,
+            },
+            {
+                preserveScroll: true,
+            },
+        );
     };
 
     const buildPayload = () => {
@@ -502,14 +513,62 @@ export default function GuestsIndex({ guests, filters }: Props) {
                         <CardTitle>Search Guests</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <form onSubmit={handleSearch} className="flex gap-4">
-                            <Input
-                                placeholder="Search by name, email, phone, or ID..."
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                className="flex-1"
-                            />
-                            <Button type="submit">Search</Button>
+                        <form onSubmit={handleSearch} className="space-y-4">
+                            <div className="flex flex-col gap-4 md:flex-row">
+                                <Input
+                                    placeholder="Search by name, email, phone, or ID..."
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                    className="flex-1"
+                                />
+                                <Button type="submit">Search</Button>
+                            </div>
+                            <div className="grid gap-4 md:grid-cols-3">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-medium text-muted-foreground">
+                                        VIP အဆင့်
+                                    </label>
+                                    <Select
+                                        value={vipStatus}
+                                        onValueChange={setVipStatus}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="အားလုံး" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="">အားလုံး</SelectItem>
+                                            <SelectItem value="vip">VIP</SelectItem>
+                                            <SelectItem value="vvip">VVIP</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-medium text-muted-foreground">
+                                        အနည်းဆုံး တည်းခိုအကြိမ်
+                                    </label>
+                                    <Input
+                                        type="number"
+                                        min={0}
+                                        value={minStays}
+                                        onChange={(event) => setMinStays(event.target.value)}
+                                    />
+                                </div>
+                                <div className="flex items-end gap-2">
+                                    <Checkbox
+                                        id="filter-blacklisted"
+                                        checked={blacklistedOnly}
+                                        onCheckedChange={(value) =>
+                                            setBlacklistedOnly(Boolean(value))
+                                        }
+                                    />
+                                    <label
+                                        htmlFor="filter-blacklisted"
+                                        className="text-sm text-muted-foreground"
+                                    >
+                                        Blacklist သာ
+                                    </label>
+                                </div>
+                            </div>
                         </form>
                     </CardContent>
                 </Card>
@@ -543,6 +602,11 @@ export default function GuestsIndex({ guests, filters }: Props) {
                                                 <h3 className="font-medium">{guest.name}</h3>
                                                 {guest.vip_status && (
                                                     <Badge variant="secondary">VIP</Badge>
+                                                )}
+                                                {guest.is_blacklisted && (
+                                                    <Badge variant="destructive">
+                                                        Blacklist
+                                                    </Badge>
                                                 )}
                                             </div>
                                             <div className="text-sm text-muted-foreground mt-1">

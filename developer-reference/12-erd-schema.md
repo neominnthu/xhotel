@@ -9,6 +9,7 @@ All tables include: id (bigint PK), uuid (char(36) unique), created_at, updated_
 - Property 1..* RoomType
 - Property 1..* Room
 - Property 1..* RatePlan
+- Property 1..* ExchangeRate
 - Property 1..* Tax
 - Property 1..* Fee
 - Property 1..* PaymentMethod
@@ -90,6 +91,23 @@ Indexes
 
 Indexes
 - index(property_id)
+
+### exchange_rates
+
+- id bigint PK
+- uuid char(36) unique
+- property_id bigint FK -> properties.id
+- base_currency char(3)
+- quote_currency char(3)
+- rate decimal(12,6)
+- effective_date date
+- source varchar(64)
+- is_active boolean
+- created_at, updated_at, deleted_at
+
+Indexes
+- index(property_id)
+- index(property_id, base_currency, quote_currency, effective_date)
 
 ### guests
 

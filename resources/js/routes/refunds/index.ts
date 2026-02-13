@@ -4,7 +4,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
  * @see app/Http/Controllers/Folios/FolioPageController.php:58
  * @route '/refunds/{refund}/approve'
  */
-export const approve = (args: { refund: string | number | { id: string | number } } | [refund: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+export const approve = (args: { refund: number | { id: number } } | [refund: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: approve.url(args, options),
     method: 'post',
 })
@@ -19,7 +19,7 @@ approve.definition = {
  * @see app/Http/Controllers/Folios/FolioPageController.php:58
  * @route '/refunds/{refund}/approve'
  */
-approve.url = (args: { refund: string | number | { id: string | number } } | [refund: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+approve.url = (args: { refund: number | { id: number } } | [refund: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { refund: args }
     }
@@ -52,7 +52,7 @@ approve.url = (args: { refund: string | number | { id: string | number } } | [re
  * @see app/Http/Controllers/Folios/FolioPageController.php:58
  * @route '/refunds/{refund}/approve'
  */
-approve.post = (args: { refund: string | number | { id: string | number } } | [refund: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+approve.post = (args: { refund: number | { id: number } } | [refund: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: approve.url(args, options),
     method: 'post',
 })
@@ -62,7 +62,7 @@ approve.post = (args: { refund: string | number | { id: string | number } } | [r
  * @see app/Http/Controllers/Folios/FolioPageController.php:58
  * @route '/refunds/{refund}/approve'
  */
-    const approveForm = (args: { refund: string | number | { id: string | number } } | [refund: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    const approveForm = (args: { refund: number | { id: number } } | [refund: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
         action: approve.url(args, options),
         method: 'post',
     })
@@ -72,7 +72,7 @@ approve.post = (args: { refund: string | number | { id: string | number } } | [r
  * @see app/Http/Controllers/Folios/FolioPageController.php:58
  * @route '/refunds/{refund}/approve'
  */
-        approveForm.post = (args: { refund: string | number | { id: string | number } } | [refund: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        approveForm.post = (args: { refund: number | { id: number } } | [refund: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
             action: approve.url(args, options),
             method: 'post',
         })
@@ -83,7 +83,7 @@ approve.post = (args: { refund: string | number | { id: string | number } } | [r
  * @see app/Http/Controllers/RefundReceiptController.php:12
  * @route '/refunds/{refund}/receipt'
  */
-export const receipt = (args: { refund: string | number | { id: string | number } } | [refund: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const receipt = (args: { refund: number | { id: number } } | [refund: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: receipt.url(args, options),
     method: 'get',
 })
@@ -98,7 +98,7 @@ receipt.definition = {
  * @see app/Http/Controllers/RefundReceiptController.php:12
  * @route '/refunds/{refund}/receipt'
  */
-receipt.url = (args: { refund: string | number | { id: string | number } } | [refund: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+receipt.url = (args: { refund: number | { id: number } } | [refund: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { refund: args }
     }
@@ -131,7 +131,7 @@ receipt.url = (args: { refund: string | number | { id: string | number } } | [re
  * @see app/Http/Controllers/RefundReceiptController.php:12
  * @route '/refunds/{refund}/receipt'
  */
-receipt.get = (args: { refund: string | number | { id: string | number } } | [refund: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+receipt.get = (args: { refund: number | { id: number } } | [refund: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: receipt.url(args, options),
     method: 'get',
 })
@@ -140,7 +140,7 @@ receipt.get = (args: { refund: string | number | { id: string | number } } | [re
  * @see app/Http/Controllers/RefundReceiptController.php:12
  * @route '/refunds/{refund}/receipt'
  */
-receipt.head = (args: { refund: string | number | { id: string | number } } | [refund: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+receipt.head = (args: { refund: number | { id: number } } | [refund: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: receipt.url(args, options),
     method: 'head',
 })
@@ -150,7 +150,7 @@ receipt.head = (args: { refund: string | number | { id: string | number } } | [r
  * @see app/Http/Controllers/RefundReceiptController.php:12
  * @route '/refunds/{refund}/receipt'
  */
-    const receiptForm = (args: { refund: string | number | { id: string | number } } | [refund: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    const receiptForm = (args: { refund: number | { id: number } } | [refund: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: receipt.url(args, options),
         method: 'get',
     })
@@ -160,7 +160,7 @@ receipt.head = (args: { refund: string | number | { id: string | number } } | [r
  * @see app/Http/Controllers/RefundReceiptController.php:12
  * @route '/refunds/{refund}/receipt'
  */
-        receiptForm.get = (args: { refund: string | number | { id: string | number } } | [refund: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        receiptForm.get = (args: { refund: number | { id: number } } | [refund: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: receipt.url(args, options),
             method: 'get',
         })
@@ -169,7 +169,7 @@ receipt.head = (args: { refund: string | number | { id: string | number } } | [r
  * @see app/Http/Controllers/RefundReceiptController.php:12
  * @route '/refunds/{refund}/receipt'
  */
-        receiptForm.head = (args: { refund: string | number | { id: string | number } } | [refund: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        receiptForm.head = (args: { refund: number | { id: number } } | [refund: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: receipt.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',

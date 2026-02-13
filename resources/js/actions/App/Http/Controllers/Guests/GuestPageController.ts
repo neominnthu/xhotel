@@ -79,7 +79,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\Guests\GuestPageController::show
- * @see app/Http/Controllers/Guests/GuestPageController.php:68
+ * @see app/Http/Controllers/Guests/GuestPageController.php:83
  * @route '/guests/{guest}'
  */
 export const show = (args: { guest: number | { id: number } } | [guest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -94,7 +94,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\Guests\GuestPageController::show
- * @see app/Http/Controllers/Guests/GuestPageController.php:68
+ * @see app/Http/Controllers/Guests/GuestPageController.php:83
  * @route '/guests/{guest}'
  */
 show.url = (args: { guest: number | { id: number } } | [guest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -127,7 +127,7 @@ show.url = (args: { guest: number | { id: number } } | [guest: number | { id: nu
 
 /**
 * @see \App\Http\Controllers\Guests\GuestPageController::show
- * @see app/Http/Controllers/Guests/GuestPageController.php:68
+ * @see app/Http/Controllers/Guests/GuestPageController.php:83
  * @route '/guests/{guest}'
  */
 show.get = (args: { guest: number | { id: number } } | [guest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -136,7 +136,7 @@ show.get = (args: { guest: number | { id: number } } | [guest: number | { id: nu
 })
 /**
 * @see \App\Http\Controllers\Guests\GuestPageController::show
- * @see app/Http/Controllers/Guests/GuestPageController.php:68
+ * @see app/Http/Controllers/Guests/GuestPageController.php:83
  * @route '/guests/{guest}'
  */
 show.head = (args: { guest: number | { id: number } } | [guest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -146,7 +146,7 @@ show.head = (args: { guest: number | { id: number } } | [guest: number | { id: n
 
     /**
 * @see \App\Http\Controllers\Guests\GuestPageController::show
- * @see app/Http/Controllers/Guests/GuestPageController.php:68
+ * @see app/Http/Controllers/Guests/GuestPageController.php:83
  * @route '/guests/{guest}'
  */
     const showForm = (args: { guest: number | { id: number } } | [guest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -156,7 +156,7 @@ show.head = (args: { guest: number | { id: number } } | [guest: number | { id: n
 
             /**
 * @see \App\Http\Controllers\Guests\GuestPageController::show
- * @see app/Http/Controllers/Guests/GuestPageController.php:68
+ * @see app/Http/Controllers/Guests/GuestPageController.php:83
  * @route '/guests/{guest}'
  */
         showForm.get = (args: { guest: number | { id: number } } | [guest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -165,7 +165,7 @@ show.head = (args: { guest: number | { id: number } } | [guest: number | { id: n
         })
             /**
 * @see \App\Http\Controllers\Guests\GuestPageController::show
- * @see app/Http/Controllers/Guests/GuestPageController.php:68
+ * @see app/Http/Controllers/Guests/GuestPageController.php:83
  * @route '/guests/{guest}'
  */
         showForm.head = (args: { guest: number | { id: number } } | [guest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -181,7 +181,7 @@ show.head = (args: { guest: number | { id: number } } | [guest: number | { id: n
     show.form = showForm
 /**
 * @see \App\Http\Controllers\Guests\GuestPageController::store
- * @see app/Http/Controllers/Guests/GuestPageController.php:148
+ * @see app/Http/Controllers/Guests/GuestPageController.php:164
  * @route '/guests'
  */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -196,7 +196,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\Guests\GuestPageController::store
- * @see app/Http/Controllers/Guests/GuestPageController.php:148
+ * @see app/Http/Controllers/Guests/GuestPageController.php:164
  * @route '/guests'
  */
 store.url = (options?: RouteQueryOptions) => {
@@ -205,7 +205,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Guests\GuestPageController::store
- * @see app/Http/Controllers/Guests/GuestPageController.php:148
+ * @see app/Http/Controllers/Guests/GuestPageController.php:164
  * @route '/guests'
  */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -215,7 +215,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\Guests\GuestPageController::store
- * @see app/Http/Controllers/Guests/GuestPageController.php:148
+ * @see app/Http/Controllers/Guests/GuestPageController.php:164
  * @route '/guests'
  */
     const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -225,7 +225,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\Guests\GuestPageController::store
- * @see app/Http/Controllers/Guests/GuestPageController.php:148
+ * @see app/Http/Controllers/Guests/GuestPageController.php:164
  * @route '/guests'
  */
         storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -236,7 +236,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     store.form = storeForm
 /**
 * @see \App\Http\Controllers\Guests\GuestPageController::update
- * @see app/Http/Controllers/Guests/GuestPageController.php:158
+ * @see app/Http/Controllers/Guests/GuestPageController.php:174
  * @route '/guests/{guest}'
  */
 export const update = (args: { guest: number | { id: number } } | [guest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -251,7 +251,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\Guests\GuestPageController::update
- * @see app/Http/Controllers/Guests/GuestPageController.php:158
+ * @see app/Http/Controllers/Guests/GuestPageController.php:174
  * @route '/guests/{guest}'
  */
 update.url = (args: { guest: number | { id: number } } | [guest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -284,7 +284,7 @@ update.url = (args: { guest: number | { id: number } } | [guest: number | { id: 
 
 /**
 * @see \App\Http\Controllers\Guests\GuestPageController::update
- * @see app/Http/Controllers/Guests/GuestPageController.php:158
+ * @see app/Http/Controllers/Guests/GuestPageController.php:174
  * @route '/guests/{guest}'
  */
 update.patch = (args: { guest: number | { id: number } } | [guest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -294,7 +294,7 @@ update.patch = (args: { guest: number | { id: number } } | [guest: number | { id
 
     /**
 * @see \App\Http\Controllers\Guests\GuestPageController::update
- * @see app/Http/Controllers/Guests/GuestPageController.php:158
+ * @see app/Http/Controllers/Guests/GuestPageController.php:174
  * @route '/guests/{guest}'
  */
     const updateForm = (args: { guest: number | { id: number } } | [guest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -309,7 +309,7 @@ update.patch = (args: { guest: number | { id: number } } | [guest: number | { id
 
             /**
 * @see \App\Http\Controllers\Guests\GuestPageController::update
- * @see app/Http/Controllers/Guests/GuestPageController.php:158
+ * @see app/Http/Controllers/Guests/GuestPageController.php:174
  * @route '/guests/{guest}'
  */
         updateForm.patch = (args: { guest: number | { id: number } } | [guest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -325,7 +325,7 @@ update.patch = (args: { guest: number | { id: number } } | [guest: number | { id
     update.form = updateForm
 /**
 * @see \App\Http\Controllers\Guests\GuestPageController::merge
- * @see app/Http/Controllers/Guests/GuestPageController.php:170
+ * @see app/Http/Controllers/Guests/GuestPageController.php:186
  * @route '/guests/{guest}/merge'
  */
 export const merge = (args: { guest: number | { id: number } } | [guest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -340,7 +340,7 @@ merge.definition = {
 
 /**
 * @see \App\Http\Controllers\Guests\GuestPageController::merge
- * @see app/Http/Controllers/Guests/GuestPageController.php:170
+ * @see app/Http/Controllers/Guests/GuestPageController.php:186
  * @route '/guests/{guest}/merge'
  */
 merge.url = (args: { guest: number | { id: number } } | [guest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -373,7 +373,7 @@ merge.url = (args: { guest: number | { id: number } } | [guest: number | { id: n
 
 /**
 * @see \App\Http\Controllers\Guests\GuestPageController::merge
- * @see app/Http/Controllers/Guests/GuestPageController.php:170
+ * @see app/Http/Controllers/Guests/GuestPageController.php:186
  * @route '/guests/{guest}/merge'
  */
 merge.post = (args: { guest: number | { id: number } } | [guest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -383,7 +383,7 @@ merge.post = (args: { guest: number | { id: number } } | [guest: number | { id: 
 
     /**
 * @see \App\Http\Controllers\Guests\GuestPageController::merge
- * @see app/Http/Controllers/Guests/GuestPageController.php:170
+ * @see app/Http/Controllers/Guests/GuestPageController.php:186
  * @route '/guests/{guest}/merge'
  */
     const mergeForm = (args: { guest: number | { id: number } } | [guest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -393,7 +393,7 @@ merge.post = (args: { guest: number | { id: number } } | [guest: number | { id: 
 
             /**
 * @see \App\Http\Controllers\Guests\GuestPageController::merge
- * @see app/Http/Controllers/Guests/GuestPageController.php:170
+ * @see app/Http/Controllers/Guests/GuestPageController.php:186
  * @route '/guests/{guest}/merge'
  */
         mergeForm.post = (args: { guest: number | { id: number } } | [guest: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

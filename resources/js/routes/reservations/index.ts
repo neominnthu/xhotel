@@ -79,7 +79,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     
     index.form = indexForm
 /**
- * @see routes/web.php:87
+ * @see routes/web.php:91
  * @route '/reservations'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -93,7 +93,7 @@ index.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
- * @see routes/web.php:87
+ * @see routes/web.php:91
  * @route '/reservations'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -101,7 +101,7 @@ index.url = (options?: RouteQueryOptions) => {
 }
 
 /**
- * @see routes/web.php:87
+ * @see routes/web.php:91
  * @route '/reservations'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -109,7 +109,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     method: 'get',
 })
 /**
- * @see routes/web.php:87
+ * @see routes/web.php:91
  * @route '/reservations'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -118,7 +118,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
     /**
- * @see routes/web.php:87
+ * @see routes/web.php:91
  * @route '/reservations'
  */
     const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -127,7 +127,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     })
 
             /**
- * @see routes/web.php:87
+ * @see routes/web.php:91
  * @route '/reservations'
  */
         indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -135,7 +135,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
             method: 'get',
         })
             /**
- * @see routes/web.php:87
+ * @see routes/web.php:91
  * @route '/reservations'
  */
         indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -362,7 +362,7 @@ show.head = (args: { reservation: number | { id: number } } | [reservation: numb
     
     show.form = showForm
 /**
- * @see routes/web.php:264
+ * @see routes/web.php:300
  * @route '/reservations/{reservation}'
  */
 export const show = (args: { reservation: number | { id: number } } | [reservation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -376,7 +376,7 @@ show.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
- * @see routes/web.php:264
+ * @see routes/web.php:300
  * @route '/reservations/{reservation}'
  */
 show.url = (args: { reservation: number | { id: number } } | [reservation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -408,7 +408,7 @@ show.url = (args: { reservation: number | { id: number } } | [reservation: numbe
 }
 
 /**
- * @see routes/web.php:264
+ * @see routes/web.php:300
  * @route '/reservations/{reservation}'
  */
 show.get = (args: { reservation: number | { id: number } } | [reservation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -416,7 +416,7 @@ show.get = (args: { reservation: number | { id: number } } | [reservation: numbe
     method: 'get',
 })
 /**
- * @see routes/web.php:264
+ * @see routes/web.php:300
  * @route '/reservations/{reservation}'
  */
 show.head = (args: { reservation: number | { id: number } } | [reservation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -425,7 +425,7 @@ show.head = (args: { reservation: number | { id: number } } | [reservation: numb
 })
 
     /**
- * @see routes/web.php:264
+ * @see routes/web.php:300
  * @route '/reservations/{reservation}'
  */
     const showForm = (args: { reservation: number | { id: number } } | [reservation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -434,7 +434,7 @@ show.head = (args: { reservation: number | { id: number } } | [reservation: numb
     })
 
             /**
- * @see routes/web.php:264
+ * @see routes/web.php:300
  * @route '/reservations/{reservation}'
  */
         showForm.get = (args: { reservation: number | { id: number } } | [reservation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -442,7 +442,7 @@ show.head = (args: { reservation: number | { id: number } } | [reservation: numb
             method: 'get',
         })
             /**
- * @see routes/web.php:264
+ * @see routes/web.php:300
  * @route '/reservations/{reservation}'
  */
         showForm.head = (args: { reservation: number | { id: number } } | [reservation: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -736,7 +736,7 @@ importMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     
     importMethod.form = importMethodForm
 /**
- * @see routes/web.php:147
+ * @see routes/web.php:151
  * @route '/reservations/create'
  */
 export const create = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -750,7 +750,7 @@ create.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
- * @see routes/web.php:147
+ * @see routes/web.php:151
  * @route '/reservations/create'
  */
 create.url = (options?: RouteQueryOptions) => {
@@ -758,7 +758,7 @@ create.url = (options?: RouteQueryOptions) => {
 }
 
 /**
- * @see routes/web.php:147
+ * @see routes/web.php:151
  * @route '/reservations/create'
  */
 create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -766,7 +766,7 @@ create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     method: 'get',
 })
 /**
- * @see routes/web.php:147
+ * @see routes/web.php:151
  * @route '/reservations/create'
  */
 create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -775,7 +775,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
     /**
- * @see routes/web.php:147
+ * @see routes/web.php:151
  * @route '/reservations/create'
  */
     const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -784,7 +784,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     })
 
             /**
- * @see routes/web.php:147
+ * @see routes/web.php:151
  * @route '/reservations/create'
  */
         createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -792,7 +792,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
             method: 'get',
         })
             /**
- * @see routes/web.php:147
+ * @see routes/web.php:151
  * @route '/reservations/create'
  */
         createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

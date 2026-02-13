@@ -117,12 +117,26 @@ export default function AdminIndex({ users, properties, roles, stats, filters }:
                             Manage users, roles, and system settings
                         </p>
                     </div>
-                    <Button asChild>
-                        <Link href="/admin/users/create">
-                            <UserPlus className="h-4 w-4 mr-2" />
-                            Add User
-                        </Link>
-                    </Button>
+                    <div className="flex flex-wrap items-center gap-2">
+                        <Button variant="outline" asChild>
+                            <Link href="/admin/roles">
+                                <Shield className="h-4 w-4 mr-2" />
+                                Roles
+                            </Link>
+                        </Button>
+                        <Button variant="outline" asChild>
+                            <Link href="/admin/permissions">
+                                <Shield className="h-4 w-4 mr-2" />
+                                Permissions
+                            </Link>
+                        </Button>
+                        <Button asChild>
+                            <Link href="/admin/users/create">
+                                <UserPlus className="h-4 w-4 mr-2" />
+                                Add User
+                            </Link>
+                        </Button>
+                    </div>
                 </div>
 
                 {/* Stats Cards */}

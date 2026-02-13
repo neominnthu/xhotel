@@ -54,6 +54,40 @@ class GuestPageTest extends TestCase
         );
     }
 
+    public function test_guest_index_filters_by_vip_blacklisted_and_min_stays(): void
+    {
+        $property = Property::factory()->create();
+        $user = User::factory()->create([
+            'role' => 'front_desk',
+            'property_id' => $property->id,
+        ]);
+
+        $vipGuest = Guest::factory()->create([
+            'property_id' => $property->id,
+            'vip_status' => 'vip',
+            'is_blacklisted' => true,
+            'total_stays' => 5,
+        ]);
+
+        Guest::factory()->create([
+            'property_id' => $property->id,
+            'vip_status' => 'vvip',
+            'is_blacklisted' => false,
+            'total_stays' => 1,
+        ]);
+
+        $response = $this->actingAs($user)->get('/guests?vip_status=vip&blacklisted=1&min_stays=3');
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('guests/index')
+            ->has('guests.data', 1)
+            ->where('guests.data.0.id', $vipGuest->id)
+            ->where('filters.vip_status', 'vip')
+            ->where('filters.blacklisted', '1')
+            ->where('filters.min_stays', '3')
+        );
+    }
+
     public function test_guest_can_be_created_from_page(): void
     {
         $property = Property::factory()->create();

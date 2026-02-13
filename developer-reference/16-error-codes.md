@@ -79,6 +79,11 @@ All errors use JSON with a top-level message and optional errors map.
 - TASK_NOT_FOUND (404)
 - TASK_STATUS_INVALID (409)
 
+### Cashier Shifts
+
+- CASHIER_SHIFT_ALREADY_OPEN (409)
+- CASHIER_SHIFT_NOT_OPEN (409)
+
 ### Rates
 
 - RATE_DATE_OVERLAP (422)
@@ -86,6 +91,7 @@ All errors use JSON with a top-level message and optional errors map.
 ### Admin
 
 - USER_EMAIL_TAKEN (409)
+- USER_NOT_FOUND (404)
 - POLICY_INVALID (422)
 
 ### Updates & Backups
@@ -140,6 +146,11 @@ All errors use JSON with a top-level message and optional errors map.
 - If refund exceeds paid total, return 409 FOLIO_REFUND_EXCEEDS_PAID.
 - If refund payment does not match folio, return 409 FOLIO_REFUND_PAYMENT_MISMATCH.
 - If refund is not pending, return 409 REFUND_STATUS_INVALID.
+
+### Cashier Shifts
+
+- If a cashier already has an open shift, return 409 CASHIER_SHIFT_ALREADY_OPEN.
+- If closing a non-open shift, return 409 CASHIER_SHIFT_NOT_OPEN.
 
 ### ABAC
 

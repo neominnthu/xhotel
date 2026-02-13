@@ -3,6 +3,7 @@ import UpdatePageController from './UpdatePageController'
 import AuditLogPageController from './AuditLogPageController'
 import RoomTypePageController from './RoomTypePageController'
 import RatePageController from './RatePageController'
+import ExchangeRatePageController from './ExchangeRatePageController'
 import ProfileController from './ProfileController'
 import PasswordController from './PasswordController'
 import TwoFactorAuthenticationController from './TwoFactorAuthenticationController'
@@ -12,6 +13,7 @@ UpdatePageController: Object.assign(UpdatePageController, UpdatePageController),
 AuditLogPageController: Object.assign(AuditLogPageController, AuditLogPageController),
 RoomTypePageController: Object.assign(RoomTypePageController, RoomTypePageController),
 RatePageController: Object.assign(RatePageController, RatePageController),
+ExchangeRatePageController: Object.assign(ExchangeRatePageController, ExchangeRatePageController),
 ProfileController: Object.assign(ProfileController, ProfileController),
 PasswordController: Object.assign(PasswordController, PasswordController),
 TwoFactorAuthenticationController: Object.assign(TwoFactorAuthenticationController, TwoFactorAuthenticationController),

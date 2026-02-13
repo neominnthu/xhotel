@@ -11,7 +11,10 @@ use Illuminate\Support\Facades\DB;
 
 class RefundService
 {
-    public function __construct(public AuditLogService $auditLogService) {}
+    public function __construct(
+        public AuditLogService $auditLogService,
+        public ExchangeRateService $exchangeRateService
+    ) {}
 
     public function requestRefund(Folio $folio, array $data, User $actor): Refund
     {
@@ -24,6 +27,15 @@ class RefundService
 
         $exchangeRate = $data['exchange_rate'] ?? null;
         $currency = $data['currency'];
+
+        if ($currency !== $folio->currency && $exchangeRate === null) {
+            $exchangeRate = $this->exchangeRateService->resolveRate(
+                $folio->reservation?->property_id ?? $actor->property_id,
+                $folio->currency,
+                $currency,
+                now(),
+            );
+        }
 
         if ($currency !== $folio->currency && $exchangeRate === null) {
             throw new HttpResponseException(response()->json([

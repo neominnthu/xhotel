@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Charge;
-use App\Models\Folio;
 use App\Models\Guest;
 use App\Models\Payment;
 use App\Models\ReservationStatusLog;
@@ -15,9 +14,10 @@ use Illuminate\Support\Facades\DB;
 
 class StayService
 {
-    public function __construct(public AuditLogService $auditLogService)
-    {
-    }
+    public function __construct(
+        public AuditLogService $auditLogService,
+        public ExchangeRateService $exchangeRateService
+    ) {}
 
     public function checkIn(Stay $stay, array $data, ?User $actor = null): Stay
     {
@@ -162,25 +162,50 @@ class StayService
             if ($paymentData) {
                 $paymentAmount = (int) $paymentData['amount'];
                 $paymentCurrency = $paymentData['currency'] ?? $folio->currency;
+                $exchangeRate = $paymentData['exchange_rate'] ?? null;
+
+                if ($paymentCurrency !== $folio->currency && $exchangeRate === null) {
+                    $exchangeRate = $this->exchangeRateService->resolveRate(
+                        $stay->reservation->property_id ?? $actor?->property_id,
+                        $folio->currency,
+                        $paymentCurrency,
+                        now(),
+                    );
+                }
+
+                if ($paymentCurrency !== $folio->currency && $exchangeRate === null) {
+                    throw new HttpResponseException(response()->json([
+                        'code' => 'FOLIO_CURRENCY_MISMATCH',
+                        'message' => 'Exchange rate required for non-folio currency.',
+                    ], 409));
+                }
+
+                $folioAmount = $paymentAmount;
+
+                if ($paymentCurrency !== $folio->currency) {
+                    $folioAmount = (int) round($paymentAmount * (float) $exchangeRate);
+                }
 
                 Payment::create([
                     'folio_id' => $folio->id,
                     'method' => $paymentData['method'],
                     'amount' => $paymentAmount,
                     'currency' => $paymentCurrency,
-                    'exchange_rate' => $paymentData['exchange_rate'] ?? 1,
+                    'exchange_rate' => $exchangeRate ?? 1,
                     'reference' => $paymentData['reference'] ?? null,
                     'received_at' => now(),
                     'created_by' => $actor?->id,
                 ]);
 
-                $folio->decrement('balance', $paymentAmount);
+                $folio->decrement('balance', $folioAmount);
 
                 if ($actor) {
                     $this->auditLogService->record($actor, 'folio.checkout.payment', 'folio', [
                         'folio_id' => $folio->id,
                         'amount' => $paymentAmount,
+                        'folio_amount' => $folioAmount,
                         'currency' => $paymentCurrency,
+                        'exchange_rate' => $exchangeRate,
                     ]);
                 }
             }

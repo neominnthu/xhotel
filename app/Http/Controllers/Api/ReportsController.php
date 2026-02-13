@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\CashierShift;
+use App\Models\User;
 use App\Services\ReportsService;
+use Carbon\Carbon;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
 
 class ReportsController extends Controller
 {
@@ -108,5 +111,45 @@ class ReportsController extends Controller
             }
             fclose($handle);
         }, $fileName);
+    }
+
+    public function cashierShift(Request $request, ReportsService $reports): JsonResponse
+    {
+        $this->authorize('viewAny', CashierShift::class);
+
+        $request->validate([
+            'date' => 'required|date',
+            'cashier_id' => 'required|integer',
+        ]);
+
+        $cashier = User::query()->find($request->cashier_id);
+
+        if (! $cashier) {
+            throw new HttpResponseException(response()->json([
+                'code' => 'USER_NOT_FOUND',
+                'message' => 'Cashier not found.',
+            ], 404));
+        }
+
+        $actor = $request->user();
+        if ($actor && $actor->role === 'cashier' && (int) $cashier->id !== (int) $actor->id) {
+            throw new HttpResponseException(response()->json([
+                'code' => 'AUTHZ_DENIED',
+                'message' => 'Not authorized to view other cashier shifts.',
+            ], 403));
+        }
+
+        $date = Carbon::parse($request->date);
+        $totals = $reports->cashierShiftReport($date, $cashier);
+
+        return response()->json([
+            'date' => $date->toDateString(),
+            'cashier' => [
+                'id' => $cashier->id,
+                'name' => $cashier->name,
+            ],
+            'total_cash' => $totals['total_cash'],
+            'total_card' => $totals['total_card'],
+        ]);
     }
 }

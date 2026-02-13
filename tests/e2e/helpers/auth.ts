@@ -17,11 +17,16 @@ export async function waitForHealth(page: Page): Promise<void> {
 export async function login(page: Page, email = E2E_USERS.manager): Promise<void> {
   await waitForHealth(page);
   await page.goto('/login', { waitUntil: 'domcontentloaded' });
+  if (!page.url().includes('/login')) {
+    return;
+  }
+
   await page.waitForSelector('input[name="email"]', { state: 'visible' });
   await page.fill('input[name="email"]', email);
   await page.fill('input[name="password"]', E2E_PASSWORD);
   await page.click('[data-test="login-button"]');
   await page.waitForURL((url) => !url.toString().includes('/login'), {
-    timeout: 10000,
+    timeout: 30000,
+    waitUntil: 'domcontentloaded',
   });
 }

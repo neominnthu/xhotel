@@ -124,6 +124,24 @@ Unless noted, all fields are required.
 - is_active: optional, boolean
 - active rate date ranges must not overlap for same room_type_id and type (excluding current rate)
 
+### POST /settings/exchange-rates
+
+- base_currency: required, string, size:3
+- quote_currency: required, string, size:3, different:base_currency
+- rate: required, numeric, min:0.000001
+- effective_date: required, date, unique per property/base/quote/date
+- source: optional, string, max:64
+- is_active: optional, boolean
+
+### PATCH /settings/exchange-rates/{exchangeRate}
+
+- base_currency: required, string, size:3
+- quote_currency: required, string, size:3, different:base_currency
+- rate: required, numeric, min:0.000001
+- effective_date: required, date, unique per property/base/quote/date (excluding current exchange rate)
+- source: optional, string, max:64
+- is_active: optional, boolean
+
 ## Reservations
 
 ### GET /reservations
@@ -154,6 +172,7 @@ Unless noted, all fields are required.
 - adults: optional, integer, min:1, max:10
 - children: optional, integer, min:0, max:10
 - room_id: optional, integer, exists:rooms,id
+- special_requests: optional, string, max:500
 - status updates require ABAC and must follow state rules
 
 ### POST /reservations/{id}/cancel
@@ -281,6 +300,24 @@ Unless noted, all fields are required.
 ### GET /rooms/{id}/housekeeping-history
 
 - path id: required, integer, exists:rooms,id
+
+## Cashier Shifts
+
+### POST /cashier-shifts/open
+
+- opening_cash: required, integer, min:0
+- currency: optional, string, size:3
+- notes: optional, string, max:255
+
+### POST /cashier-shifts/{id}/close
+
+- path id: required, integer, exists:cashier_shifts,id
+- closing_cash: required, integer, min:0
+- notes: optional, string, max:255
+
+### GET /cashier-shifts/current
+
+- No input
 
 ## Reports
 

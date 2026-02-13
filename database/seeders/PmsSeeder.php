@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\ExchangeRate;
 use App\Models\Folio;
 use App\Models\Guest;
 use App\Models\Property;
@@ -24,6 +25,17 @@ class PmsSeeder extends Seeder
             'default_currency' => 'MMK',
             'default_language' => 'my',
             'phone' => '959000000000',
+        ]);
+
+        ExchangeRate::updateOrCreate([
+            'property_id' => $property->id,
+            'base_currency' => $property->default_currency,
+            'quote_currency' => 'USD',
+            'effective_date' => now()->toDateString(),
+        ], [
+            'rate' => 3500,
+            'source' => 'seed',
+            'is_active' => true,
         ]);
 
         $users = [
